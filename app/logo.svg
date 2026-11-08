@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="mtpRing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset=".5" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="mtpHex" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f1b3a"/><stop offset="1" stop-color="#0e0c1c"/>
+    </linearGradient>
+    <linearGradient id="mtpFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="mtpMask"><rect x="0" y="112" width="200" height="60" fill="url(#mtpFade)"/></mask>
+    <clipPath id="mtpClip"><polygon points="100,30 160.6,65 160.6,135 100,170 39.4,135 39.4,65"/></clipPath>
+    <radialGradient id="mtpGlow"><stop offset="0" stop-color="#8b5cf6" stop-opacity=".55"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient>
+  </defs>
+  <style>
+    .mtp-orbit{transform-origin:100px 100px;animation:mtpSpin 14s linear infinite}
+    .mtp-orbit2{transform-origin:100px 100px;animation:mtpSpin 22s linear infinite reverse}
+    .mtp-m{stroke-dasharray:260;stroke-dashoffset:260;animation:mtpDraw 1.6s .3s cubic-bezier(.6,.1,.2,1) forwards}
+    .mtp-refl{opacity:0;animation:mtpIn 1s 1.4s forwards, mtpWave 3.5s 2.4s ease-in-out infinite}
+    .mtp-dot{transform-origin:100px 92px;animation:mtpPulse 1.8s ease-in-out infinite}
+    .mtp-shine{animation:mtpShine 4s 2s ease-in-out infinite}
+    .mtp-glow{transform-origin:100px 100px;animation:mtpBreath 3s ease-in-out infinite}
+    .mtp-candle{opacity:0;animation:mtpIn .5s forwards}
+    @keyframes mtpSpin{to{transform:rotate(360deg)}}
+    @keyframes mtpDraw{to{stroke-dashoffset:0}}
+    @keyframes mtpIn{to{opacity:1}}
+    @keyframes mtpWave{50%{transform:translateY(2px) scaleY(.94)}}
+    @keyframes mtpPulse{50%{transform:scale(1.5);opacity:.75}}
+    @keyframes mtpShine{0%{transform:translateX(-160px)}60%,100%{transform:translateX(200px)}}
+    @keyframes mtpBreath{50%{transform:scale(1.12);opacity:.6}}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}}
+  </style>
+
+  <circle class="mtp-glow" cx="100" cy="100" r="88" fill="url(#mtpGlow)"/>
+  <circle class="mtp-orbit" cx="100" cy="100" r="93" fill="none" stroke="url(#mtpRing)" stroke-width="2" stroke-dasharray="3 9" stroke-linecap="round"/>
+  <g class="mtp-orbit2">
+    <circle cx="100" cy="100" r="84" fill="none" stroke="#3a3658" stroke-width="1"/>
+    <circle cx="184" cy="100" r="3.5" fill="#22d3ee"/>
+    <circle cx="16" cy="100" r="2.5" fill="#b794ff"/>
+  </g>
+
+  <polygon points="100,30 160.6,65 160.6,135 100,170 39.4,135 39.4,65" fill="url(#mtpHex)" stroke="url(#mtpRing)" stroke-width="3.5" stroke-linejoin="round"/>
+
+  <g clip-path="url(#mtpClip)">
+    <!-- velas de fondo -->
+    <g opacity=".35">
+      <g class="mtp-candle" style="animation-delay:.1s"><line x1="62" y1="72" x2="62" y2="100" stroke="#2ee6a6" stroke-width="1.5"/><rect x="59" y="78" width="6" height="16" rx="1" fill="#2ee6a6"/></g>
+      <g class="mtp-candle" style="animation-delay:.2s"><line x1="138" y1="70" x2="138" y2="102" stroke="#ff5470" stroke-width="1.5"/><rect x="135" y="76" width="6" height="18" rx="1" fill="#ff5470"/></g>
+      <g class="mtp-candle" style="animation-delay:.3s"><line x1="88" y1="56" x2="88" y2="80" stroke="#2ee6a6" stroke-width="1.5"/><rect x="85" y="60" width="6" height="12" rx="1" fill="#2ee6a6"/></g>
+      <g class="mtp-candle" style="animation-delay:.4s"><line x1="112" y1="54" x2="112" y2="82" stroke="#ff5470" stroke-width="1.5"/><rect x="109" y="60" width="6" height="14" rx="1" fill="#ff5470"/></g>
+    </g>
+    <!-- línea del espejo -->
+    <line x1="44" y1="112" x2="156" y2="112" stroke="#e9e6ff" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="2 3"/>
+    <!-- M principal: izquierda compra, derecha venta -->
+    <polyline class="mtp-m" points="56,106 76,62 100,92" fill="none" stroke="#2ee6a6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline class="mtp-m" points="100,92 124,62 144,106" fill="none" stroke="#ff5470" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" style="animation-delay:.55s"/>
+    <!-- reflejo en el agua -->
+    <g class="mtp-refl" mask="url(#mtpMask)" style="transform-origin:100px 112px">
+      <polyline points="56,118 76,162 100,132 124,162 144,118" fill="none" stroke="#b794ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <!-- brillo que cruza -->
+    <rect class="mtp-shine" x="0" y="20" width="26" height="170" fill="#ffffff" opacity=".10" transform="skewX(-20)"/>
+  </g>
+  <circle class="mtp-dot" cx="100" cy="92" r="6" fill="#ffc53d"/>
+  <circle cx="100" cy="92" r="2.5" fill="#fff"/>
+</svg>

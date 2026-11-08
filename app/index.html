@@ -1,0 +1,1778 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0b14">
+<title>Boom &amp; Crash Scanner · Mirror Trade Pro</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Boom &amp; Crash">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="lightweight-charts.js"></script>
+<script src="config.js?v=111"></script>
+<script src="core.js?v=111"></script>
+<script src="i18n_packs.js?v=111"></script>
+<script src="i18n.js?v=111"></script>
+<style>
+:root{
+  --bg:#0c0b14; --bg2:#12111d; --card2:#1a1829; --line:#2a2740; --line2:#3a3658;
+  --text:#f1effa; --muted:#9a95b8; --faint:#5f5a80;
+  --vio:#8b5cf6; --vio2:#b794ff; --cyan:#22d3ee; --boom:#2ee6a6; --crash:#ff5470; --hot:#ffc53d;
+  --buy:#6cc24a; --sell:#e8502a;
+  --head:"Sora","Segoe UI",Roboto,sans-serif; --body:"Manrope","Segoe UI",Roboto,sans-serif;
+  --tabh:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{padding-top:env(safe-area-inset-top,0px)}
+html,body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input{font:inherit;color:inherit}
+.num{font-family:var(--head);font-variant-numeric:tabular-nums}
+.hidden{display:none!important}
+:focus-visible{outline:2px solid var(--vio2);outline-offset:2px}
+
+/* ===== FONDO MARCA DE AGUA ===== */
+#wm{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.layer{position:relative;z-index:1}
+
+/* ===== PÁGINA DE INICIO ===== */
+#home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px calc(28px + env(safe-area-inset-bottom,0px))}
+.brand{display:flex;flex-direction:column;align-items:center;text-align:center}
+.brand img{width:190px;height:190px;filter:drop-shadow(0 0 30px #8b5cf655)}
+.brand h1{font-family:var(--head);font-weight:800;font-size:28px;letter-spacing:2px;margin-top:4px;background:linear-gradient(90deg,#fff,#d9ccff 60%,#9ef0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand h1 .pro{display:inline-block;font-size:14px;letter-spacing:3px;padding:3px 9px;margin-left:6px;vertical-align:middle;border-radius:8px;background:linear-gradient(90deg,var(--vio),var(--cyan));color:#fff;-webkit-text-fill-color:#fff;box-shadow:0 4px 18px #8b5cf666}
+.brand p{color:var(--muted);font-size:13px;margin-top:6px;letter-spacing:1px}
+.brand p.appname{color:#fff;font-family:var(--head);font-weight:800;font-size:15px;letter-spacing:3px;margin-top:10px;padding:6px 14px;border-radius:10px;background:linear-gradient(90deg,#6cc24a33,#e8502a33);border:1px solid var(--line2)}
+.brand{animation:rise .8s both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+
+.auth{width:100%;max-width:400px;margin-top:22px;background:#15132496;border:1px solid var(--line2);border-radius:26px;padding:18px;backdrop-filter:blur(10px);box-shadow:0 30px 80px #0009;animation:rise .8s .2s both}
+.tabs2{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:16px;position:relative}
+.tabs2 button{flex:1;padding:10px;border-radius:10px;font-family:var(--head);font-weight:700;font-size:14px;color:var(--muted);position:relative;z-index:1;transition:color .2s}
+.tabs2 button.on{color:#fff}
+.tabs2 .pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:10px;background:linear-gradient(90deg,var(--vio),#6d4ae0);transition:transform .3s cubic-bezier(.2,.9,.3,1)}
+.tabs2.reg .pill{transform:translateX(100%)}
+.field{margin-bottom:12px;position:relative}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.field input{width:100%;padding:14px 44px 14px 14px;border-radius:14px;border:1px solid var(--line2);background:var(--bg);outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--vio);box-shadow:0 0 0 4px #8b5cf622}
+.eye{position:absolute;right:8px;bottom:8px;width:32px;height:32px;display:grid;place-items:center;color:var(--muted)}
+.eye svg{width:18px;height:18px}
+.btn{display:block;width:100%;padding:15px;border-radius:16px;font-weight:700;font-family:var(--head);font-size:15px;text-align:center;text-decoration:none;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn-main{background:linear-gradient(90deg,var(--vio),#6d4ae0);color:#fff;box-shadow:0 10px 30px #8b5cf655}
+.btn-ghost{border:1px solid var(--line2);margin-top:10px}
+/* Planes de suscripción */
+.plans{display:grid;gap:10px;margin:14px 0 6px}
+.plan{position:relative;display:block;width:100%;text-align:left;padding:16px 16px 14px;border-radius:18px;border:1.5px solid var(--line2);background:var(--card2);transition:border-color .15s,box-shadow .15s}
+.plan.on{border-color:var(--vio);box-shadow:0 0 0 3px #8b5cf633}
+.plan .pt{font-family:var(--head);font-weight:800;font-size:16px}
+.plan .pp{font-family:var(--head);font-weight:800;font-size:22px;margin-top:4px}
+.plan .pp small{font-size:13px;color:var(--muted);font-weight:600}
+.plan .pd{font-size:12.5px;color:var(--muted);margin-top:4px}
+.plan .badge{position:absolute;top:-10px;right:14px;background:var(--boom);color:#04140d;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;letter-spacing:.3px}
+.plan .pdot{position:absolute;top:18px;right:16px;width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}
+.plan.on .pdot{border-color:var(--vio);background:radial-gradient(circle,var(--vio) 45%,transparent 50%)}
+.trialbox{display:flex;gap:10px;align-items:flex-start;background:#2ee6a614;border:1px solid #2ee6a640;color:var(--text);border-radius:14px;padding:12px;font-size:13.5px;line-height:1.45;margin-top:8px}
+.fine{font-size:11.5px;color:var(--faint);line-height:1.5;margin-top:10px;text-align:left}
+.link{color:var(--vio2);font-size:14px;margin-top:12px;display:inline-block;font-weight:600}
+.msg{min-height:20px;margin:6px 0 10px;font-size:13.5px;color:var(--hot);line-height:1.45}
+.msg.ok{color:var(--boom)}
+.center{text-align:center}
+.small{color:var(--faint);font-size:12px;text-align:center;margin-top:14px}
+.demo{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line2)}
+
+/* ===== ENCABEZADO DEL SCANNER ===== */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:#0c0b14e8;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.hd1{display:flex;flex-direction:column;align-items:center;padding:8px 16px 2px}
+.hd1 img{width:52px;height:52px}
+.hd1 b{font-family:var(--head);font-weight:800;font-size:12px;letter-spacing:3px;margin-top:-2px}
+.hd1 b span{color:var(--vio2)}
+.hd2{max-width:620px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px 10px}
+.live{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--crash);flex:none}
+.dot.on{background:var(--boom);animation:pulse 1.8s infinite}
+.dot.wait{background:var(--hot)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #2ee6a699}70%{box-shadow:0 0 0 7px #2ee6a600}100%{box-shadow:0 0 0 0 #2ee6a600}}
+.seg{display:flex;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{padding:6px 11px;border-radius:9px;font-family:var(--head);font-size:12.5px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--vio);color:#fff}
+
+.sndBtn{height:36px;padding:0 12px;border-radius:12px;border:1px solid var(--line2);display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text);background:var(--bg2);transition:background .2s,border-color .2s}
+.sndBtn svg{width:18px;height:18px}
+.sndBtn.off{color:var(--faint)}
+.sndBtn.alarm{border-color:var(--crash);background:#ff547022;color:var(--crash);animation:sndPulse .5s infinite alternate}
+@keyframes sndPulse{to{box-shadow:0 0 14px #ff547088}}
+.scanline.alarm{background:linear-gradient(180deg,#ff547000,#ff547026 70%,#ff5470cc 98%,#ff547000)}
+main{max-width:620px;margin:0 auto;padding:10px 14px calc(var(--tabh) + 30px + env(safe-area-inset-bottom,0px))}
+.page{animation:fade .25s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+#plansLinks a{color:#b9b4d6;text-decoration:underline}
+.notice.trialbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#2ee6a614;border-color:#2ee6a640}
+.trialbar .link{margin:0;white-space:nowrap}
+.notice{margin:0 0 10px;padding:10px 12px;border-radius:14px;background:#ffc53d14;border:1px solid #ffc53d40;font-size:14px}
+h3.sec{font-family:var(--head);font-size:15px;font-weight:700;margin:18px 2px 10px;display:flex;justify-content:space-between;align-items:baseline}
+h3.sec span{font-family:var(--body);font-weight:500;font-size:12px;color:var(--muted)}
+
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sum button{text-align:left;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:10px 12px;transition:transform .1s,border-color .2s}
+.sum button:active{transform:scale(.97)}
+.sum button.on{border-color:var(--vio)}
+.sum small{display:block;font-size:11.5px;color:var(--muted)}
+.sum b{font-family:var(--head);font-size:21px;font-weight:700}
+
+/* ===== TABLERO "POPULARIDAD" ===== */
+.board{margin-top:12px;background:#f4f4f6;border-radius:18px;padding:10px 10px 12px;position:relative;overflow:hidden;box-shadow:0 20px 50px #0008}
+.board-h{display:flex;align-items:center;gap:10px;padding:2px 4px 10px;color:#2b2b33}
+.board-h b{font-family:var(--body);font-weight:800;font-size:17px;flex:1}
+.board-h span{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px}
+.board-h i{width:16px;height:16px;border-radius:3px;display:inline-block}
+.scanline{position:absolute;left:0;right:0;height:46px;top:0;pointer-events:none;background:linear-gradient(180deg,#8b5cf600,#8b5cf61f 70%,#8b5cf6aa 98%,#8b5cf600);animation:sweep var(--scanT,3.6s) linear infinite}
+@keyframes sweep{from{transform:translateY(20px)}to{transform:translateY(var(--scanEnd,560px))}}
+.prow{display:flex;align-items:center;gap:8px;width:100%;margin-top:7px;text-align:left}
+.rank{width:36px;height:36px;flex:none;display:grid;place-items:center;border:1.5px solid #c9c9d1;border-radius:7px;background:#fff;color:#33333d;font-family:var(--body);font-weight:800;font-size:15px;box-shadow:inset 0 -2px 0 #e3e3ea}
+.bar{position:relative;flex:1;height:38px;border-radius:9px;overflow:hidden;background:#e4e4ea;box-shadow:inset 0 0 0 1px #0000000f}
+.bar .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-family:var(--body);font-weight:800;font-size:14.5px;letter-spacing:.3px;color:#3a3a46}
+.bar .t .pc{font-family:var(--head);font-size:15px}
+.bar .fill{position:absolute;inset:0;transition:clip-path .8s cubic-bezier(.2,.9,.3,1)}
+.bar .fill.buy{background:linear-gradient(180deg,#8fd86a,#6cc24a 55%,#5aae3a)}
+.bar .fill.sell{background:linear-gradient(180deg,#f47a50,#e8502a 55%,#d3441f)}
+.bar .fill .t{color:#fff;text-shadow:0 1px 2px #0005}
+.prow.zona .bar{box-shadow:0 0 0 2.5px var(--hot),0 0 18px #ffc53d99}
+.prow.extrema .bar{animation:blinkbar 1s infinite}
+@keyframes blinkbar{50%{box-shadow:0 0 0 3px #8b5cf6,0 0 22px #8b5cf6cc}0%,100%{box-shadow:0 0 0 3px var(--hot),0 0 18px #ffc53dbb}}
+.prow.zona .rank,.prow.extrema .rank{background:#ffc53d;border-color:#e0a91f}
+.prow.pend .t{color:#8a8a96;font-weight:600}
+.prow:active .bar{transform:scale(.99)}
+.bnote{color:#6b6b78;font-size:11.5px;text-align:center;margin-top:10px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:8px 14px;border-radius:20px;border:1px solid var(--line2);font-size:13px;font-weight:600;color:var(--muted)}
+.chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+
+/* ===== IDIOMAS DE DERECHA A IZQUIERDA (árabe) ===== */
+[dir=rtl] .board,[dir=rtl] .ptab,[dir=rtl] #cv,[dir=rtl] .seg,[dir=rtl] #rsiCv,[dir=rtl] .brand h1{direction:ltr}
+[dir=rtl] .eye{right:auto;left:8px}
+[dir=rtl] .field input{padding:14px 14px 14px 44px}
+
+/* ===== ACTUALIZAR ===== */
+.upd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding:8px 8px 8px 14px;background:var(--card2);border:1px solid var(--line);border-radius:14px}
+.upd span{font-size:12.5px;color:var(--muted)}
+.upd b{color:var(--text);font-family:var(--head)}
+.btnUpd{display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:11px;background:var(--vio);color:#fff;font-family:var(--head);font-weight:700;font-size:13px;box-shadow:0 6px 18px #8b5cf644;transition:transform .1s}
+.btnUpd:active{transform:scale(.96)}
+.btnUpd svg{width:16px;height:16px}
+.btnUpd.busy{background:var(--line2);box-shadow:none}
+.btnUpd.busy svg,.ptr.busy svg{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ptr{position:fixed;left:50%;top:0;z-index:30;width:44px;height:44px;margin-left:-22px;border-radius:50%;background:var(--card2);border:1px solid var(--line2);box-shadow:0 8px 24px #000a;display:grid;place-items:center;color:var(--vio2);transform:translateY(-60px);opacity:0;pointer-events:none;transition:opacity .15s}
+.ptr svg{width:22px;height:22px}
+.ptr.ready{color:#fff;background:var(--vio);border-color:var(--vio)}
+.ptrTxt{position:fixed;left:0;right:0;top:0;z-index:30;text-align:center;font-size:12px;font-weight:700;color:var(--text);opacity:0;pointer-events:none}
+.ptrTxt span{display:inline-block;background:#12111df2;border:1px solid var(--line2);padding:5px 12px;border-radius:12px;box-shadow:0 6px 18px #0009}
+
+/* ===== PRECIOS EN VIVO ===== */
+.ptab{background:var(--card2);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.ph,.pr{display:grid;grid-template-columns:1.15fr 1.05fr .95fr .95fr;gap:6px;align-items:center;padding:10px 12px}
+.ph{font-size:10.5px;font-weight:800;letter-spacing:1px;color:var(--faint);border-bottom:1px solid var(--line)}
+.ph span:not(:first-child),.pr > span:not(:first-child){text-align:right}
+.pr{width:100%;text-align:left;border-top:1px solid #ffffff08;font-family:var(--head);font-variant-numeric:tabular-nums;font-size:13.5px}
+.pr:first-of-type{border-top:0}
+.pr:active{background:#ffffff08}
+.pr .n{font-family:var(--body);font-weight:800;font-size:13px;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.pr .n i{width:8px;height:8px;border-radius:50%;flex:none}
+.pr .n small{display:block;font-size:10px;font-weight:700;color:var(--faint);letter-spacing:.5px}
+.pr .px{font-weight:700;font-size:14.5px;border-radius:6px;padding:2px 4px;transition:background .6s,color .6s}
+.pr .px.up{background:#2ee6a633;color:#6ff0c2} .pr .px.dn{background:#ff547033;color:#ff8a9d}
+.pr .rs{color:var(--muted)} .pr .lv{font-weight:800}
+.pr sup{font-size:9px;color:var(--vio2);margin-left:2px}
+.pnote{font-size:11.5px;color:var(--faint);padding:10px 12px;border-top:1px solid var(--line);line-height:1.45}
+.slt{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;align-items:center;padding:6px 0}
+.slt input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line2);background:var(--bg);font-family:var(--head);text-align:right;outline:none}
+.slt input:focus{border-color:var(--vio)}
+.slt b{font-size:13px}
+.slt.h{font-size:11px;color:var(--muted);font-weight:700}
+
+/* ===== SEÑALES ===== */
+.feed .it{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:10px}
+.feed .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px;grid-row:span 2}
+.feed .h{font-family:var(--head);font-weight:700}
+.feed .s{font-size:12.5px;color:var(--muted)}
+.feed .p{font-family:var(--head);font-weight:800;font-size:18px;text-align:right}
+.feed .tg{font-size:11px;text-align:right}
+.empty{text-align:center;color:var(--muted);padding:40px 20px;border:1px dashed var(--line2);border-radius:20px}
+
+/* ===== AJUSTES ===== */
+.set{background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:6px 14px;margin-bottom:12px}
+.set .ln{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.set .ln:first-child{border-top:0}
+.set .ln span{flex:1}
+.set .ln small{display:block;color:var(--muted);font-size:12px}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--line2);position:relative;flex:none;transition:background .2s}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+.sw.on{background:var(--vio)} .sw.on:after{transform:translateX(20px)}
+.diag{font-size:12px;color:var(--faint);padding:4px 0 12px;word-break:break-word;font-family:ui-monospace,monospace}
+.okmsg{font-size:13.5px;min-height:18px;padding-bottom:12px;line-height:1.55}
+.okmsg .ok{color:var(--boom)} .okmsg .bad{color:var(--crash)} .okmsg .tip{color:var(--muted);font-size:12.5px;display:block;margin:2px 0 6px 20px}
+.urow{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+.urow .em{font-weight:700;word-break:break-all}
+.urow .mt{font-size:12px;color:var(--muted);margin:3px 0 8px}
+.urow .ac{display:flex;gap:8px;flex-wrap:wrap}
+.urow .ac button{padding:7px 12px;border-radius:10px;border:1px solid var(--line2);font-size:12.5px;font-weight:700}
+.st{font-size:10.5px;font-weight:800;letter-spacing:.5px;padding:3px 8px;border-radius:7px;margin-left:6px}
+.st.activo{background:#2ee6a622;color:var(--boom)} .st.pendiente{background:#ffc53d22;color:var(--hot)} .st.bloqueado{background:#ff547022;color:var(--crash)}
+.chfound{display:block;width:100%;text-align:left;margin-top:8px;padding:10px 12px;border:1px solid var(--vio);border-radius:12px;background:#8b5cf61a}
+.adminTag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:1px;padding:3px 8px;border-radius:7px;background:#8b5cf62a;color:var(--vio2)}
+.tgState{display:flex;align-items:center;gap:8px;padding:10px 12px;margin:6px 0 4px;border-radius:12px;font-weight:700;font-size:13.5px}
+.tgState.on{background:#2ee6a61a;color:var(--boom)} .tgState.off{background:#ff54701a;color:var(--crash)}
+
+/* ===== BARRA INFERIOR ===== */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:15;background:#12111df2;backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .in{max-width:620px;margin:0 auto;display:flex;height:var(--tabh)}
+nav.tabs button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11.5px;font-weight:700;color:var(--faint);position:relative}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--vio2)}
+nav.tabs button.on:before{content:"";position:absolute;top:0;width:34px;height:3px;border-radius:0 0 3px 3px;background:var(--vio2)}
+.badge{position:absolute;top:8px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--crash);color:#fff;font-size:10.5px;display:grid;place-items:center}
+
+/* ===== HOJA DE DETALLE ===== */
+#shade{position:fixed;inset:0;background:#0009;z-index:25;opacity:0;pointer-events:none;transition:opacity .25s}
+#shade.on{opacity:1;pointer-events:auto}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:26;transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.9,.3,1)}
+#sheet.on{transform:none}
+#sheet .in{position:relative;max-width:620px;margin:0 auto;background:var(--bg2);border:1px solid var(--line2);border-bottom:0;border-radius:28px 28px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 12px}
+.ib{width:40px;height:40px;border-radius:12px;border:1px solid var(--line2);display:grid;place-items:center}
+.ib svg{width:18px;height:18px}
+.sh-name{font-family:var(--head);font-size:22px;font-weight:800;margin-top:2px}
+.side{font-size:11px;font-weight:800;letter-spacing:.5px;padding:4px 9px;border-radius:8px;display:inline-block}
+.side.crash{background:#ff547020;color:var(--crash)} .side.boom{background:#2ee6a620;color:var(--boom)}
+.big{font-family:var(--head);font-weight:800;font-size:48px;line-height:1}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.kv div{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.kv small{display:block;color:var(--muted);font-size:12px}
+.kv b{font-family:var(--head);font-size:16px}
+.kv .entry{grid-column:1/-1;border-color:var(--vio)}
+.kv .entry b{font-size:22px}
+#rsiCv{width:100%;height:110px;display:block;background:var(--bg);border:1px solid var(--line);border-radius:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+
+/* ===== GRÁFICO ===== */
+#cv{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.cvh{display:flex;align-items:center;gap:12px;padding:12px 16px 8px}
+.cvh .t{flex:1}
+.cvh b{font-family:var(--head);font-weight:800;font-size:19px}
+.cvh .t div{color:var(--muted);font-size:13px}
+.cvb{display:flex;gap:10px;align-items:center;padding:0 16px 8px;flex-wrap:wrap}
+.sig{font-family:var(--head);font-weight:800;font-size:13px;padding:8px 12px;border-radius:12px}
+.lg2{display:flex;gap:12px;padding:0 16px 8px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.lg2 i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+#chart{flex:1;min-height:0;margin:0 8px 8px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.cvf{padding:4px 16px 12px;font-size:13px;color:var(--muted);font-family:var(--head)}
+
+#toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translate(-50%,-180%);transition:transform .35s;z-index:70;background:var(--card2);border:1px solid var(--hot);border-radius:16px;padding:12px 16px;max-width:92vw;font-weight:700;box-shadow:0 10px 40px #000a}
+#toast.show{transform:translate(-50%,0)}
+.disc{color:var(--faint);font-size:12px;line-height:1.5;margin-top:18px;text-align:center}
+.risk{position:fixed;inset:0;z-index:999;background:#07060dd9;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}
+.risk .rin{max-width:420px;width:100%;max-height:88vh;overflow:auto;background:var(--card);border:1px solid var(--line2);border-radius:22px;padding:22px 20px;box-shadow:0 20px 60px #0009}
+.risk .rico{font-size:34px;text-align:center}
+.risk h3{font-family:var(--head);font-size:21px;text-align:center;margin:6px 0 12px}
+.risk p{color:var(--muted);font-size:14px;line-height:1.55;margin-bottom:10px}
+.risk ul{margin:0 0 16px 18px;color:var(--text);font-size:14px;line-height:1.55}
+.risk li{margin-bottom:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="wm" aria-hidden="true"></canvas>
+
+<!-- ================= PÁGINA DE INICIO ================= -->
+<div id="home" class="layer">
+  <div class="brand">
+    <img src="logo.svg" alt="Logo de Mirror Trade Pro">
+    <h1>MIRROR TRADE<span class="pro">PRO</span></h1>
+    <p class="appname">BOOM &amp; CRASH SCANNER</p>
+  </div>
+
+  <div class="auth">
+    <div class="tabs2" id="authTabs"><div class="pill"></div>
+      <button class="on" data-m="login">Ingresar</button><button data-m="reg">Registrarse</button>
+    </div>
+
+    <!-- Ingresar / Registrarse -->
+    <div id="fMain">
+      <div class="field"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="email" placeholder="sucorreo@gmail.com"></div>
+      <div class="field"><label for="pass">Contraseña</label><input id="pass" type="password" autocomplete="current-password" placeholder="mínimo 6 caracteres">
+        <button class="eye" data-for="pass" aria-label="Mostrar contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+      <div class="field hidden" id="fPass2"><label for="pass2">Repita la contraseña</label><input id="pass2" type="password" autocomplete="new-password" placeholder="escríbala otra vez"></div>
+      <div class="msg" id="authMsg" role="status"></div>
+      <button class="btn btn-main" id="btnGo">Ingresar</button>
+      <div class="center" id="forgotWrap"><button class="link" id="btnForgot">¿Olvidó su contraseña?</button></div>
+    </div>
+
+    <!-- Recuperar contraseña -->
+    <div id="fForgot" class="hidden">
+      <p style="font-family:var(--head);font-weight:700;font-size:17px;margin-bottom:6px">Recuperar contraseña</p>
+      <p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Escriba su correo y le enviaremos un enlace para crear una contraseña nueva.</p>
+      <div class="field"><label for="emailR">Correo electrónico</label><input id="emailR" type="email" autocomplete="email" placeholder="sucorreo@gmail.com"></div>
+      <div class="msg" id="forgotMsg" role="status"></div>
+      <button class="btn btn-main" id="btnSendReset">Enviar enlace</button>
+      <div class="center"><button class="link" id="btnBack">← Volver a ingresar</button></div>
+    </div>
+
+    <!-- Sin acceso -->
+    <div id="fBlocked" class="hidden">
+      <p style="font-family:var(--head);font-weight:700;font-size:17px;margin-bottom:6px" id="blockedTitle">Acceso pendiente</p>
+      <div class="msg" id="blockedMsg"></div>
+      <a class="btn btn-main" id="buyBtn" target="_blank" rel="noopener">Comprar en Google Play</a>
+      <button class="btn btn-main hidden" id="btnResend">Reenviar correo</button>
+      <p class="small hidden" id="verifyTip" style="text-align:left;line-height:1.5">Revise también las carpetas <b>Spam</b> y <b>Promociones</b>. El correo llega de <b>noreply@mirror-trade-pro.firebaseapp.com</b> y puede tardar unos minutos. Si no le llega, escríbanos por el canal de Telegram y lo activamos manualmente.</p>
+      <button class="btn btn-ghost" id="btnRecheck">Revisar de nuevo</button>
+      <div class="center"><button class="link" id="btnOut2">Cerrar sesión</button></div>
+    </div>
+
+    <div id="fPlans" class="hidden">
+      <p style="font-family:var(--head);font-weight:800;font-size:20px;margin-bottom:4px" id="plansTitle">Elija su plan</p>
+      <p class="small" style="margin:0;text-align:left" id="plansSub">Acceso completo al scanner, alertas y gráficos.</p>
+      <div class="trialbox hidden"><span>⏳</span><span id="trialTxt">Todavía está en su prueba gratis. Si se suscribe ahora, el primer cobro se hace hoy.</span></div>
+      <div class="plans">
+        <button class="plan on" data-plan="anual"><span class="badge" id="saveBadge">AHORRA 16%</span><span class="pdot"></span>
+          <div class="pt">Anual</div><div class="pp"><span id="prAnual">US$ 9,99</span> <small>/ año</small></div><div class="pd" id="pdAnual">Equivale a US$ 0,83 al mes</div></button>
+        <button class="plan" data-plan="mensual"><span class="pdot"></span>
+          <div class="pt">Mensual</div><div class="pp"><span id="prMensual">US$ 0,99</span> <small>/ mes</small></div><div class="pd">Pago mes a mes</div></button>
+      </div>
+      <div class="msg" id="plansMsg"></div>
+      <button class="btn btn-main" id="btnSubscribe">Suscribirme</button>
+      <p class="fine hidden" id="plansFineIos">El pago se cobra a su cuenta de Apple al confirmar la compra. La suscripción se renueva automáticamente, salvo que la cancele al menos 24 horas antes de que termine el periodo. Puede gestionarla o cancelarla en Ajustes → su nombre → Suscripciones.</p>
+      <p class="fine hidden" id="plansLinks"><a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Términos de uso (EULA)</a> · <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a></p>
+      <p class="fine" id="plansFine">Google Play cobra el plan elegido y lo renueva en cada periodo, hasta que lo cancele. Puede cancelar en cualquier momento en Google Play → Pagos y suscripciones → Suscripciones.</p>
+      <button class="btn btn-ghost" id="btnRestore">Ya tengo una suscripción</button>
+      <button class="btn btn-ghost hidden" id="btnBackApp">Volver a la app</button>
+      <div class="center"><button class="link" id="btnOut3">Cerrar sesión</button></div>
+    </div>
+
+    <div class="demo hidden" id="demoBox">
+      <button class="btn btn-ghost" id="btnDemo" style="margin-top:0">Entrar en modo ensayo</button>
+      <p class="small" style="margin-top:8px">El registro de usuarios se activa al conectar la base de datos (Firebase).</p>
+    </div>
+    <p class="small">Versión <span id="ver"></span> · <a href="privacidad.html" target="_blank" rel="noopener" style="color:var(--muted)">Política de privacidad</a></p>
+  </div>
+</div>
+
+<!-- ================= SCANNER ================= -->
+<div id="app" class="layer hidden">
+  <header>
+    <div class="hd1"><img src="logo.svg" alt="Mirror Trade Pro"><b>MIRROR TRADE <span>PRO</span></b></div>
+    <div class="hd2">
+      <div class="live"><i class="dot" id="liveDot"></i><span id="liveTxt">Conectando…</span></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="sndBtn" id="sndBtn" aria-label="Silenciar sonido"></button>
+        <div class="seg" id="tfs"></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="page" id="pgScan">
+      <div class="notice hidden" id="notice"></div>
+      <div class="notice trialbar hidden" id="trialBar"><span id="trialBarTxt"></span><button class="link" id="btnTrialPlans">Ver planes</button></div>
+      <div class="upd">
+        <span>Último dato: <b id="updAge">—</b></span>
+        <button class="btnUpd" id="btnUpd" aria-label="Actualizar los datos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg><span id="btnUpdTxt" style="color:inherit;font-size:13px">Actualizar</span></button>
+      </div>
+      <div class="sum">
+        <button data-f="all" class="on"><small>Con datos</small><b id="sCount">0/10</b></button>
+        <button data-f="zone"><small>En zona ≥90%</small><b id="sZone" style="color:var(--hot)">0</b></button>
+        <button data-f="best"><small>Más fuerte</small><b id="sBest">—</b></button>
+      </div>
+
+      <div class="chips" id="chips">
+        <button class="chip on" data-f="all">Todos</button>
+        <button class="chip" data-f="zone">En zona ≥90%</button>
+        <button class="chip" data-f="boom">Boom · comprar</button>
+        <button class="chip" data-f="crash">Crash · vender</button>
+      </div>
+
+      <div class="board">
+        <div class="scanline"></div>
+        <div class="board-h"><b>Popularidad</b><span><i style="background:#6cc24a"></i>Comprar</span><span><i style="background:#e8502a"></i>Vender</span></div>
+        <div id="rows"></div>
+        <p class="bnote">Verde = Boom (comprar) · Rojo = Crash (vender) · RSI <span id="rsiTxt"></span></p>
+      </div>
+      <h3 class="sec">Precios en vivo <span>Precio, RSI y nivel de cada índice</span></h3>
+      <div class="ptab">
+        <div class="ph"><span>ÍNDICE</span><span>PRECIO</span><span>RSI</span><span>NIVEL</span></div>
+        <div id="pRows"></div>
+        <div class="pnote">Nivel = qué tan cerca está el RSI de la zona extrema (90% o más = alerta). Toque un índice para ver su detalle.<span id="pFixNote"></span></div>
+      </div>
+      <p class="disc">Herramienta de monitoreo. Las alertas son informativas: no son recomendaciones ni predicen el precio. Los índices sintéticos son de alto riesgo.</p>
+    </div>
+
+    <div class="page hidden" id="pgSig">
+      <h3 class="sec">Señales <span id="sigCount"></span></h3>
+      <div class="feed" id="feed"></div>
+      <button class="btn btn-ghost" id="btnClear">Borrar historial</button>
+    </div>
+
+    <div class="page hidden" id="pgSet">
+      <h3 class="sec">Alertas en este celular</h3>
+      <div class="set">
+        <div class="ln"><span>Sonido del scanner<small>ping suave · alarma rápida desde 90%</small></span><button class="sw on" id="swSound" aria-label="Sonido"></button></div>
+        <div class="ln"><span>Vibración</span><button class="sw on" id="swVib" aria-label="Vibración"></button></div>
+        <div class="ln"><span>Idioma<small>Language</small></span>
+          <select id="langSel" style="padding:9px 10px;border-radius:10px;border:1px solid var(--line2);background:var(--bg);color:var(--text);font:inherit">
+            <option value="auto">Automático</option>
+          </select></div>
+      </div>
+
+      <!-- SOLO ADMINISTRADOR -->
+      <div id="adminArea" class="hidden">
+        <h3 class="sec">Telegram <span class="adminTag">ADMINISTRADOR</span></h3>
+        <div class="set">
+          <div class="tgState off" id="tgState">● Envío automático APAGADO</div>
+          <div class="ln"><span>Enviar señales al canal<small>90% y 95%, con precio de entrada</small></span><button class="sw" id="swTg" aria-label="Enviar a Telegram"></button></div>
+          <div class="field" style="margin-top:6px"><label for="tgToken">1. Token del bot (de @BotFather)</label><input id="tgToken" type="password" placeholder="123456789:ABC…" autocomplete="off"></div>
+          <div class="field"><label for="tgChat">2. Canal (@usuario del canal, no el del bot)</label><input id="tgChat" placeholder="@mirrortradepro" autocomplete="off"></div>
+          <button class="btn btn-main" id="btnTgFind" style="margin:0 0 10px">Buscar mi canal automáticamente</button>
+          <button class="btn btn-ghost" id="btnTgCheck" style="margin:0 0 10px">Revisar configuración</button>
+          <button class="btn btn-ghost" id="btnTgTest" style="margin:0 0 10px">Enviar mensaje de prueba</button>
+          <button class="btn btn-ghost" id="btnTgSample" style="margin:0 0 10px">Enviar señal de ejemplo</button>
+          <div class="okmsg" id="tgMsg"></div>
+        </div>
+
+        <h3 class="sec" style="display:none">SL y TP por índice <span class="adminTag">ADMINISTRADOR</span></h3>
+        <div class="set" style="padding:12px 14px;display:none">
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px">Escriba los <b>pips</b> de distancia desde el precio de entrada (1 pip = 1,00 de precio). Si deja una casilla vacía, ese valor se calcula solo según la volatilidad. Se aplica a todos los usuarios y a las alertas de Telegram.</p>
+          <div class="slt h"><span>Índice</span><span style="text-align:right">SL (pips)</span><span style="text-align:right">TP (pips)</span></div>
+          <div id="sltpEd"></div>
+          <button class="btn btn-main" id="btnSltpSave" style="margin-top:10px">Guardar SL y TP</button>
+          <button class="btn btn-ghost" id="btnSltpAuto">Restablecer valores de fábrica</button>
+          <div class="msg" id="sltpMsg"></div>
+        </div>
+
+        <h3 class="sec">Conexión con Deriv <span class="adminTag">ADMINISTRADOR</span></h3>
+        <div class="set">
+          <div class="ln"><span>Estado</span><b id="cState">—</b></div>
+          <div class="ln"><span>Servidor</span><b id="cSrv" style="font-size:13px">—</b></div>
+          <div class="ln"><span>Último dato</span><b id="cAge" class="num">—</b></div>
+          <div class="diag" id="diag"></div>
+          <button class="btn btn-ghost" id="btnRetry" style="margin:0 0 12px">Reconectar ahora</button>
+        </div>
+      </div>
+
+      <!-- Desbloqueo de administrador (solo en modo ensayo) -->
+      <div id="pinArea" class="hidden">
+        <h3 class="sec">Administrador</h3>
+        <div class="set" style="padding:14px">
+          <div class="field"><label for="pin">Clave de administrador</label><input id="pin" type="password" inputmode="numeric" placeholder="••••"></div>
+          <button class="btn btn-ghost" id="btnPin" style="margin:0">Desbloquear</button>
+          <div class="msg" id="pinMsg"></div>
+        </div>
+      </div>
+
+      <h3 class="sec">Cuenta</h3>
+      <div class="set">
+        <div class="ln"><span>Sesión<small id="whoami">—</small></span></div>
+        <div class="ln"><span>Canal de señales</span><a class="link" style="margin:0" id="tgLink" target="_blank" rel="noopener">Abrir</a></div>
+        <div class="ln hidden" id="subRow"><span><span id="subLbl">Suscripción</span><small id="subTxt">—</small></span><button class="link" style="margin:0" id="btnManage">Gestionar</button><button class="link hidden" style="margin:0" id="btnSubPlans">Ver planes</button></div>
+        <div class="ln"><span>Aviso de riesgo</span><button class="link" style="margin:0" id="btnRisk">Abrir</button></div>
+        <div class="ln"><span>Versión</span><b id="ver2"></b></div>
+      </div>
+      <button class="btn btn-ghost" id="btnLogout">Cerrar sesión</button>
+      <div id="delArea" class="hidden" style="margin-top:22px">
+        <button class="link" id="btnDelAsk" style="color:var(--crash)">Eliminar mi cuenta</button>
+        <div id="delBox" class="set hidden" style="padding:14px;margin-top:8px;border-color:#ff547060">
+          <p style="font-size:13.5px;margin-bottom:10px">Se borrará su cuenta y sus datos. Esta acción no se puede deshacer. Para confirmar, escriba su contraseña.</p>
+          <div class="field"><label for="delPass">Contraseña</label><input id="delPass" type="password" autocomplete="current-password"></div>
+          <button class="btn" id="btnDel" style="background:var(--crash);color:#fff">Eliminar definitivamente</button>
+          <div class="msg" id="delMsg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL DEL ADMINISTRADOR -->
+    <div class="page hidden" id="pgAdm">
+      <h3 class="sec">Usuarios registrados <span class="adminTag">ADMINISTRADOR</span></h3>
+      <div class="sum" style="grid-template-columns:repeat(4,1fr)">
+        <button data-u="all" class="on"><small>Todos</small><b id="uAll">0</b></button>
+        <button data-u="activo"><small>Activos</small><b id="uAct" style="color:var(--boom)">0</b></button>
+        <button data-u="sub"><small>Con acceso</small><b id="uPen" style="color:var(--hot)">0</b></button>
+        <button data-u="bloqueado"><small>Bloqueados</small><b id="uBlk" style="color:var(--crash)">0</b></button>
+      </div>
+      <div class="field" style="margin-top:12px"><input id="uSearch" placeholder="Buscar por correo"></div>
+      <div id="uList"></div>
+      <button class="btn btn-ghost" id="btnUReload">Actualizar lista</button>
+
+      <h3 class="sec">Aviso para todos los usuarios</h3>
+      <div class="set" style="padding:14px">
+        <div class="field"><label for="cAviso">Aparece arriba del scanner (déjelo vacío para ocultarlo)</label><input id="cAviso" placeholder="Ej.: Hoy 8 p. m. clase en vivo por Telegram"></div>
+        <div class="field"><label for="cTgLink">Enlace del canal de Telegram para los usuarios</label><input id="cTgLink" placeholder="https://t.me/mirrortradepro"></div>
+        <button class="btn btn-main" id="btnCfgSave">Guardar</button>
+        <div class="msg" id="cfgMsg"></div>
+      </div>
+    </div>
+  </main>
+
+  <nav class="tabs"><div class="in">
+    <button class="on" data-p="pgScan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M4 12h16"/></svg>Scanner</button>
+    <button data-p="pgSig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>Señales<span class="badge hidden" id="badge">0</span></button>
+    <button data-p="pgSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Ajustes</button>
+    <button data-p="pgAdm" id="navAdm" class="hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>Panel</button>
+  </div></nav>
+</div>
+
+<div id="shade"></div>
+<div id="sheet" role="dialog" aria-modal="true"><div class="in" id="sheetIn"></div></div>
+<div id="riskBox" class="risk hidden" role="dialog" aria-modal="true">
+  <div class="rin">
+    <div class="rico">⚠️</div>
+    <h3>Antes de empezar</h3>
+    <p>Boom &amp; Crash Scanner es una herramienta de monitoreo: muestra en vivo el RSI de los índices Boom y Crash y avisa cuando llegan a zonas extremas.</p>
+    <ul>
+      <li>Las alertas son informativas. No son recomendaciones de compra o venta ni predicen el precio.</li>
+      <li>Operar índices sintéticos tiene alto riesgo.</li>
+      <li>Solo para mayores de 18 años. Esta app no está afiliada a ningún bróker.</li>
+    </ul>
+    <button class="btn btn-main" id="btnRiskOk">Entiendo y acepto</button>
+  </div>
+</div>
+
+<div id="cv" class="hidden">
+  <div class="cvh">
+    <div class="t"><b id="cvName"></b><div id="cvSub"></div></div>
+    <button class="ib" id="cvClose" aria-label="Cerrar gráfico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="cvb"><span class="sig" id="cvSig"></span><div class="seg" id="cvTfs"></div></div>
+  <div class="lg2">
+    <span><i style="background:#ffd54a"></i>EMA 20</span><span><i style="background:#f59e0b"></i>EMA 50</span>
+    <span><i style="background:#b794ff"></i>EMA 200</span><span>▼▲ señal ≥90%</span>
+  </div>
+  <div id="chart"></div>
+  <div class="cvf" id="cvFoot"></div>
+</div>
+
+<div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg></div>
+<div class="ptrTxt" id="ptrTxt"></div>
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+"use strict";
+var CFG = window.MTS_CONFIG, C = window.MTCore;
+function $(id){ return document.getElementById(id); }
+function show(id){ $(id).classList.remove("hidden"); }
+function hide(id){ $(id).classList.add("hidden"); }
+var TF = [["M5",300],["H1",3600],["H4",14400]];
+function tfName(v){ for (var i=0;i<TF.length;i++) if (TF[i][1]===v) return TF[i][0]; return v+"s"; }
+function fmt(n,d){ if (n==null||isNaN(n)) return "—"; d = d==null?2:d; return Number(n).toLocaleString((window.MTS_LOCALE||"es-CO"),{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function hhmm(t){ var d = new Date(t); return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2); }
+function store(k,v){ try { if (v===undefined) return JSON.parse(localStorage.getItem("mts_"+k)); localStorage.setItem("mts_"+k, JSON.stringify(v)); } catch(e){ return null; } }
+var KEYTAG = CFG.firebase && CFG.firebase.apiKey ? " · …" + CFG.firebase.apiKey.slice(-4) : "";
+$("ver").textContent = CFG.appVersion + KEYTAG; $("ver2").textContent = CFG.appVersion + KEYTAG;
+$("rsiTxt").textContent = CFG.rsiBoom + " / " + CFG.rsiCrash;
+
+/* ================= FONDO: MARCA DE AGUA DE TRADING ================= */
+(function(){
+  var cv = $("wm"), g = cv.getContext("2d"), W, H, dpr, candles = [], line = [], off = 0;
+  function size(){ dpr = window.devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = W*dpr; cv.height = H*dpr; g.setTransform(dpr,0,0,dpr,0,0); }
+  function seed(){
+    candles = []; var p = 0.55;
+    for (var i=0;i<80;i++){ var o = p; p += (Math.random()-.5)*.07; p = Math.max(.25,Math.min(.8,p)); candles.push({ o:o, c:p, h:Math.min(o,p)-Math.random()*.03, l:Math.max(o,p)+Math.random()*.03 }); }
+    line = []; var q = 0.4; for (var j=0;j<120;j++){ q += (Math.random()-.5)*.04; q = Math.max(.15,Math.min(.9,q)); line.push(q); }
+  }
+  size(); seed(); addEventListener("resize", size);
+  function frame(){
+    requestAnimationFrame(frame);
+    var onHome = !$("home").classList.contains("hidden");
+    g.clearRect(0,0,W,H);
+    var alpha = onHome ? 1 : 0.55;
+    // cuadrícula
+    g.strokeStyle = "rgba(139,92,246," + (0.07*alpha) + ")"; g.lineWidth = 1;
+    for (var x = -(off % 40); x < W; x += 40){ g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke(); }
+    for (var y = 0; y < H; y += 40){ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }
+    // velas
+    var cw = 16, sx = -(off % cw);
+    for (var i=0;i<candles.length;i++){
+      var k = candles[(i + Math.floor(off/cw)) % candles.length], x2 = sx + i*cw;
+      if (x2 > W) break;
+      var up = k.c < k.o, col = up ? "46,230,166" : "255,84,112", a = 0.13*alpha;
+      g.strokeStyle = "rgba("+col+","+a+")"; g.beginPath(); g.moveTo(x2+cw/2, k.h*H); g.lineTo(x2+cw/2, k.l*H); g.stroke();
+      g.fillStyle = "rgba("+col+","+a+")"; g.fillRect(x2+3, Math.min(k.o,k.c)*H, cw-6, Math.max(2, Math.abs(k.c-k.o)*H));
+    }
+    // línea de precio
+    g.strokeStyle = "rgba(34,211,238," + (0.18*alpha) + ")"; g.lineWidth = 2; g.beginPath();
+    var lw = W/(line.length-10);
+    for (var j=0;j<line.length;j++){ var lx = j*lw - (off*0.6 % lw), ly = line[(j + Math.floor(off*0.6/lw)) % line.length]*H*0.6 + H*0.2; if (j) g.lineTo(lx,ly); else g.moveTo(lx,ly); }
+    g.stroke();
+    // texto de marca de agua
+    g.save(); g.translate(W/2, H*0.82); g.rotate(-0.12);
+    g.font = "800 " + Math.round(W*0.11) + "px Sora, sans-serif"; g.textAlign = "center";
+    g.fillStyle = "rgba(183,148,255," + (0.05*alpha) + ")"; g.fillText("MIRROR TRADE PRO", 0, 0); g.restore();
+    off += 0.35;
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ================= ACCESO =================
+   Reglas:
+   · Administrador (correo en adminEmails): entra siempre.
+   · Cliente que instaló la app desde Google Play (la compró): entra al verificar su correo.
+   · Quien instaló la app por fuera de Google Play: queda "pendiente" hasta que el administrador lo apruebe.
+   · El administrador puede bloquear a cualquiera desde la pestaña "Panel". */
+var fb = null, remote = {}, mode = "login";
+var hasFirebase = !!(CFG.firebase && CFG.firebase.apiKey);
+var ADMINS = (CFG.adminEmails || []).map(function(x){ return x.toLowerCase(); });
+var PLAY_URL = "https://play.google.com/store/apps/details?id=" + (CFG.packageName || "com.mirrortradepro.scanner");
+function msg(id, t, ok){ var el = $(id); el.textContent = t || ""; el.className = "msg" + (ok ? " ok" : ""); }
+function installer(){ try { return window.MTSNative && window.MTSNative.installer ? String(window.MTSNative.installer()) : "web"; } catch(e){ return ""; } }
+function fromPlay(){ return installer() === "com.android.vending"; }
+// App de iPhone (App Store): pagos con Apple y textos de Apple en lugar de Google Play
+var IOS = installer() === "ios";
+if (IOS) {
+  document.documentElement.classList.add("ios");
+  ["plansFine"].forEach(function(id){ var e = $(id); if (e) e.classList.add("hidden"); });
+  ["plansFineIos", "plansLinks"].forEach(function(id){ var e = $(id); if (e) e.classList.remove("hidden"); });
+  var gp2as = function(n){
+    if (n.nodeType === 3) { if (n.nodeValue.indexOf("Google Play") >= 0) n.nodeValue = n.nodeValue.replace(/Google Play/g, "App Store"); return; }
+    if (n.nodeType === 1 && n.tagName !== "SCRIPT" && n.tagName !== "STYLE") for (var c = n.firstChild; c; c = c.nextSibling) gp2as(c);
+  };
+  // Se activa después del traductor, para cambiar el texto ya traducido
+  window.addEventListener("load", function(){
+    gp2as(document.body);
+    new MutationObserver(function(list){ list.forEach(function(m){ if (m.type === "characterData") gp2as(m.target); else for (var i = 0; i < m.addedNodes.length; i++) gp2as(m.addedNodes[i]); }); })
+      .observe(document.body, { subtree: true, childList: true, characterData: true });
+  });
+}
+
+function setMode(m){
+  mode = m;
+  $("authTabs").classList.toggle("reg", m === "reg");
+  Array.prototype.forEach.call($("authTabs").querySelectorAll("button"), function(b){ b.classList.toggle("on", b.getAttribute("data-m") === m); });
+  $("fPass2").classList.toggle("hidden", m !== "reg");
+  $("forgotWrap").classList.toggle("hidden", m === "reg");
+  $("btnGo").textContent = m === "reg" ? "Crear cuenta" : "Ingresar";
+  $("pass").setAttribute("autocomplete", m === "reg" ? "new-password" : "current-password");
+  msg("authMsg", "");
+}
+Array.prototype.forEach.call($("authTabs").querySelectorAll("button"), function(b){ b.onclick = function(){ setMode(b.getAttribute("data-m")); }; });
+Array.prototype.forEach.call(document.querySelectorAll(".eye"), function(b){
+  b.onclick = function(){ var i = $(b.getAttribute("data-for")); i.type = i.type === "password" ? "text" : "password"; };
+});
+$("btnForgot").onclick = function(){ hide("fMain"); hide("authTabs"); show("fForgot"); $("emailR").value = $("email").value; msg("forgotMsg",""); };
+$("btnBack").onclick = function(){ hide("fForgot"); show("fMain"); show("authTabs"); };
+$("buyBtn").href = PLAY_URL;
+
+function validEmail(e){ return /^\S+@\S+\.\S+$/.test(e); }
+var NO_FB = "El registro todavía no está activado: falta conectar la base de usuarios (Firebase). Mientras tanto use «Entrar en modo ensayo».";
+
+$("btnGo").onclick = function(){
+  var em = $("email").value.trim(), pw = $("pass").value;
+  if (!validEmail(em)) return msg("authMsg", "Escriba un correo válido.");
+  if (pw.length < 6) return msg("authMsg", "La contraseña debe tener mínimo 6 caracteres.");
+  if (mode === "reg" && pw !== $("pass2").value) return msg("authMsg", "Las dos contraseñas no son iguales.");
+  if (!fb) return msg("authMsg", NO_FB);
+  msg("authMsg", mode === "reg" ? "Creando su cuenta…" : "Validando…", true);
+  var A = fb.A;
+  var p = mode === "reg"
+    ? A.createUserWithEmailAndPassword(fb.auth, em, pw).then(function(c){ S.justRegistered = true; return A.sendEmailVerification(c.user); })
+    : A.signInWithEmailAndPassword(fb.auth, em, pw);
+  p.catch(function(e){ msg("authMsg", authErr(e)); });
+};
+$("btnSendReset").onclick = function(){
+  var em = $("emailR").value.trim();
+  if (!validEmail(em)) return msg("forgotMsg", "Escriba un correo válido.");
+  if (!fb) return msg("forgotMsg", NO_FB);
+  fb.A.sendPasswordResetEmail(fb.auth, em)
+    .then(function(){ msg("forgotMsg", "Listo. Revise su correo (también la carpeta de spam) y abra el enlace para crear su contraseña nueva.", true); })
+    .catch(function(e){ msg("forgotMsg", authErr(e)); });
+};
+function authErr(e){
+  return ({"auth/invalid-credential":"Correo o contraseña incorrectos.","auth/wrong-password":"Contraseña incorrecta.","auth/user-not-found":"Ese correo no tiene cuenta. Toque «Registrarse».",
+    "auth/email-already-in-use":"Ese correo ya tiene cuenta. Toque «Ingresar».","auth/weak-password":"La contraseña debe tener mínimo 6 caracteres.",
+    "auth/invalid-email":"El correo no es válido.","auth/too-many-requests":"Demasiados intentos. Espere unos minutos.",
+    "auth/network-request-failed":"Sin internet. Revise su conexión.","auth/api-key-not-valid.-please-pass-a-valid-api-key.":"Firebase rechazó la clave de la app (termina en " + (CFG.firebase.apiKey||"").slice(-4) + "). Avise al administrador.","auth/invalid-api-key":"Firebase rechazó la clave de la app. Avise al administrador.","auth/requires-recent-login":"Por seguridad, cierre sesión, vuelva a entrar e intente de nuevo."})[e.code] || ("Error: " + e.message);
+}
+
+if (hasFirebase) {
+  var V = "10.12.2";
+  Promise.all([
+    import("https://www.gstatic.com/firebasejs/"+V+"/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/"+V+"/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/"+V+"/firebase-firestore.js")
+  ]).then(function(m){
+    var app = m[0].initializeApp(CFG.firebase);
+    // En iPhone se guarda la sesión con IndexedDB (sin la ventana emergente de Google, que el iPhone no usa)
+    var auth = IOS && m[1].initializeAuth ? m[1].initializeAuth(app, { persistence: [m[1].indexedDBLocalPersistence, m[1].browserLocalPersistence] }) : m[1].getAuth(app);
+    fb = { auth:auth, db:m[2].getFirestore(app), A:m[1], F:m[2] };
+    var out = function(){ fb.A.signOut(fb.auth); };
+    $("btnOut2").onclick = out; $("btnLogout").onclick = out;
+    $("btnRecheck").onclick = function(){ var u = fb.auth.currentUser; if (!u) return showHome(); msg("blockedMsg","Revisando…",true); u.reload().then(function(){ checkAccess(fb.auth.currentUser); }); };
+    fb.A.onAuthStateChanged(fb.auth, function(u){ if (u) checkAccess(u); else showHome(); });
+  }).catch(function(){ msg("authMsg", "No se pudo cargar el sistema de acceso. Revise su internet y vuelva a abrir la app."); });
+} else {
+  show("demoBox");
+  $("btnDemo").onclick = function(){ S.user = "Modo ensayo"; S.isAdmin = store("adminOk") === true; startApp(); };
+  $("btnLogout").onclick = function(){ stopApp(); showHome(); };
+}
+function showHome(){ stopApp(); closeSheet && closeSheet(); hide("app"); show("home"); show("fMain"); show("authTabs"); hide("fForgot"); hide("fBlocked"); hide("fPlans"); msg("authMsg", S.flash || "", !!S.flash); S.flash = ""; window.scrollTo(0,0); }
+function showBlocked(title, t, buy, verify){
+  stopApp(); hide("app"); show("home"); hide("fMain"); hide("authTabs"); hide("fForgot"); hide("fPlans"); show("fBlocked");
+  $("blockedTitle").textContent = title; $("blockedMsg").textContent = t; $("blockedMsg").className = "msg";
+  $("buyBtn").classList.toggle("hidden", !buy);
+  $("btnResend").classList.toggle("hidden", !verify); $("verifyTip").classList.toggle("hidden", !verify);
+}
+var lastResend = 0;
+$("btnResend").onclick = function(){
+  var u = fb && fb.auth.currentUser; if (!u) return;
+  if (Date.now() - lastResend < 60000) { $("blockedMsg").textContent = "Espere un minuto antes de reenviar."; return; }
+  lastResend = Date.now();
+  fb.A.sendEmailVerification(u).then(function(){
+    $("blockedMsg").className = "msg ok"; $("blockedMsg").textContent = "Correo reenviado. Puede tardar unos minutos; revise Spam y Promociones.";
+  }).catch(function(e){ $("blockedMsg").className = "msg"; $("blockedMsg").textContent = authErr(e); });
+};
+
+function checkAccess(user){
+  var F = fb.F, email = (user.email || "").toLowerCase(), isAdmin = ADMINS.indexOf(email) >= 0;
+  var ref = F.doc(fb.db, "usuarios", user.uid);
+  F.getDoc(F.doc(fb.db, "config", "app")).then(function(c){ if (c.exists()) remote = c.data(); }).catch(function(){})
+  .then(function(){
+    return F.getDoc(ref).then(function(d){
+      var play = fromPlay(), now = F.serverTimestamp();
+      if (!d.exists()) {
+        // Primer ingreso: se crea su ficha (aunque todavía no haya verificado el correo,
+        // así el administrador lo ve en el Panel y puede aprobarlo)
+        var data = { email: email, estado: "activo", origen: play ? "play" : (installer() || "otro"),
+                     verificado: !!user.emailVerified, creado: now, ultimoAcceso: now, pruebaInicio: now };
+        return F.setDoc(ref, data).then(function(){ return data; });
+      }
+      var u = d.data(), upd = { ultimoAcceso: now };
+      if (u.verificado !== !!user.emailVerified) { upd.verificado = !!user.emailVerified; u.verificado = upd.verificado; }
+      if (u.estado === "pendiente" && play) { upd.estado = "activo"; upd.origen = "play"; u.estado = "activo"; }
+      return F.updateDoc(ref, upd).then(function(){ return u; }, function(){ return u; });
+    }).then(function(u){
+      S.user = user.email; S.isAdmin = isAdmin && user.emailVerified; S.uid = user.uid;
+      if (u.estado === "bloqueado" && !isAdmin) return showBlocked("Acceso bloqueado", "Su cuenta fue bloqueada por el administrador. Si cree que es un error, escríbanos por el canal de Telegram.", false);
+      // El correo debe estar verificado, salvo que el administrador lo haya aprobado a mano
+      if (!user.emailVerified && !u.manual) {
+        return showBlocked("Verifique su correo",
+          (S.justRegistered ? "¡Cuenta creada! " : "") + "Le enviamos un correo a " + user.email + ". Ábralo, toque el enlace de verificación (revise también spam) y luego toque «Revisar de nuevo».", false, true);
+      }
+      S.manual = !!u.manual;
+      if (S.isAdmin || u.manual) return startApp();
+      // 3 días de prueba gratis (sin tarjeta) y después suscripción de Google Play
+      return setupTrial(ref, u).then(function(){ return checkSubscription(true); });
+    });
+  }).catch(function(e){ showBlocked("Sin conexión", "No se pudo comprobar su acceso. Revise su internet y toque «Revisar de nuevo».", false); });
+}
+
+/* ================= SUSCRIPCIONES (Google Play Billing) =================
+   Producto: boomcrash_premium · planes "mensual" (US$0,99) y "anual" (US$9,99).
+   La prueba gratis de 3 días la da la app (sin tarjeta): empieza al crear la cuenta
+   y se guarda en Firestore (usuarios/{uid}.pruebaInicio y dispositivos/{id}, una por celular). */
+var TRIAL_MS = 3 * 86400000;
+var TR = { start: 0, end: 0, offset: 0, isNew: false, timer: null };
+function tsMs(t){ return t && t.toMillis ? t.toMillis() : 0; }
+function srvNow(){ return Date.now() + TR.offset; }
+function trialActive(){ return TR.end > 0 && srvNow() < TR.end; }
+function inTrial(){ return !S.isAdmin && !S.manual && !SUB.active && trialActive(); }
+function deviceId(){ try { return window.MTSNative && window.MTSNative.deviceId ? (window.MTSNative.deviceId() || "") : ""; } catch(e){ return ""; } }
+function setupTrial(ref, u){
+  var F = fb.F, p = Promise.resolve(), devStart = 0, wrote = !!u.pruebaInicio;
+  if (!u.pruebaInicio) p = F.updateDoc(ref, { pruebaInicio: F.serverTimestamp() }).then(function(){ wrote = true; }, function(){});
+  var dev = deviceId();
+  if (dev) p = p.then(function(){
+    var dref = F.doc(fb.db, "dispositivos", dev);
+    return F.getDoc(dref).then(function(d){
+      if (d.exists()) { devStart = tsMs(d.data().inicio); return; }
+      return F.setDoc(dref, { inicio: F.serverTimestamp(), uid: S.uid });
+    }).catch(function(){});
+  });
+  return p.then(function(){ return F.getDoc(ref); }).then(function(d){
+    var x = d.data() || {}, start = tsMs(x.pruebaInicio) || (wrote ? 0 : tsMs(x.creado)), now = tsMs(x.ultimoAcceso);
+    if (now) TR.offset = now - Date.now();               // hora del servidor (no la del celular)
+    if (devStart && (!start || devStart < start)) start = devStart;  // una prueba por celular
+    TR.start = start; TR.end = start ? start + TRIAL_MS : 0;
+    TR.isNew = !!start && (tsMs(x.ultimoAcceso) || srvNow()) - start < 120000;   // recién empezó: mensaje de bienvenida
+  }).catch(function(){ TR.end = 0; });
+}
+function startTrialApp(){
+  startApp();
+  if (TR.isNew) { TR.isNew = false; toast(T("¡Bienvenido! Tiene 3 días gratis para probar la app, sin tarjeta.")); }
+}
+function leftText(ms){
+  var m = Math.max(1, Math.ceil(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60);
+  if (d > 0) return d + " " + T(d === 1 ? "día" : "días") + (h ? " " + h + " " + T(h === 1 ? "hora" : "horas") : "");
+  if (h > 0) return h + " " + T(h === 1 ? "hora" : "horas");
+  return m + " " + T("minutos");
+}
+function updateTrialBar(){
+  var on = inTrial();
+  $("trialBar").classList.toggle("hidden", !on);
+  if (on) $("trialBarTxt").textContent = T("Prueba gratis: le quedan {t}.").replace("{t}", leftText(TR.end - srvNow()));
+}
+function startTrialWatch(){
+  clearInterval(TR.timer); clearTimeout(TR.endT);
+  updateTrialBar();
+  if (!inTrial()) return;
+  TR.timer = setInterval(updateTrialBar, 60000);
+  // Cuando se vence la prueba: si no tiene suscripción, se muestran los planes
+  TR.endT = setTimeout(function(){ checkSubscription(false); }, Math.min(TR.end - srvNow() + 1500, 2147483000));
+}
+var SUB = { plan: "anual", info: null, active: null, timer: null };
+function T(x){ try { return window.MTS_T ? window.MTS_T(x) : x; } catch(e){ return x; } }
+function hasBilling(){ return !!(window.MTSNative && window.MTSNative.subQuery); }
+function nativeCall(fn, args, ms){
+  return new Promise(function(res){
+    if (!window.MTSNative || !window.MTSNative[fn]) return res({ ok:false, code:"NO_BILLING" });
+    var id = "b" + (++tgN); tgCbs[id] = res;
+    if (ms) setTimeout(function(){ if (tgCbs[id]) { delete tgCbs[id]; res({ ok:false, code:"TIMEOUT" }); } }, ms);
+    try { window.MTSNative[fn].apply(window.MTSNative, args.concat([id])); } catch(e){ delete tgCbs[id]; res({ ok:false, code:"ERROR", msg:String(e) }); }
+  });
+}
+function saveSubToDb(st){
+  if (!fb || !S.uid) return;
+  var data = { activa: !!st.active, plan: st.plan || "", renueva: !!st.autoRenewing, actualizado: fb.F.serverTimestamp() };
+  fb.F.updateDoc(fb.F.doc(fb.db, "usuarios", S.uid), { suscripcion: data }).catch(function(){});
+}
+function showPlans(note){
+  stopApp(); hide("app"); show("home"); hide("fMain"); hide("authTabs"); hide("fForgot"); hide("fBlocked"); show("fPlans");
+  var expired = TR.end > 0 && !trialActive(), trial = trialActive();
+  $("plansTitle").textContent = expired ? T("Su prueba gratis de 3 días terminó") : T("Elija su plan");
+  $("plansSub").textContent = expired ? T("Para seguir usando el scanner, las alertas y los gráficos, elija un plan.") : T("Acceso completo al scanner, alertas y gráficos.");
+  $("trialTxt").parentNode.classList.toggle("hidden", !trial);
+  $("btnBackApp").classList.toggle("hidden", !trial);
+  msg("plansMsg", note || "", false);
+  loadPlanPrices();
+  window.scrollTo(0,0);
+}
+function selectPlan(p){
+  SUB.plan = p;
+  Array.prototype.forEach.call(document.querySelectorAll("#fPlans .plan"), function(b){ b.classList.toggle("on", b.getAttribute("data-plan") === p); });
+  updateTrialText();
+}
+function updateTrialText(){
+  $("btnSubscribe").textContent = T("Suscribirme");
+}
+function loadPlanPrices(){
+  if (!hasBilling()) { msg("plansMsg", "Para suscribirse, instale la app desde Google Play."); return; }
+  nativeCall("subPlans", [], 20000).then(function(r){
+    if (!r || !r.ok || !r.plans) return;
+    var info = {};
+    r.plans.forEach(function(x){ info[x.plan] = x; });
+    SUB.info = info;
+    if (info.mensual) $("prMensual").textContent = info.mensual.price;
+    if (info.anual) {
+      $("prAnual").textContent = info.anual.price;
+      if (info.anual.micros && info.anual.currency) {
+        var m = info.anual.micros / 1e6 / 12;
+        try { $("pdAnual").textContent = T("Equivale a") + " " + new Intl.NumberFormat(window.MTS_LOCALE || "es-CO", { style:"currency", currency: info.anual.currency, maximumFractionDigits: m >= 100 ? 0 : 2 }).format(m) + " " + T("al mes"); } catch(e){}
+      }
+      if (info.mensual && info.mensual.micros) {
+        var save = Math.round((1 - info.anual.micros / (info.mensual.micros * 12)) * 100);
+        if (save > 0) $("saveBadge").textContent = T("AHORRA") + " " + save + "%"; else $("saveBadge").classList.add("hidden");
+      }
+    }
+    updateTrialText();
+  });
+}
+// Revisa si el usuario tiene una suscripción activa en Google Play (incluye la prueba gratis)
+function checkSubscription(open){
+  if (!hasBilling()) {
+    if (trialActive()) { if (open) startTrialApp(); return Promise.resolve(true); }
+    showPlans(); return Promise.resolve(false);
+  }
+  if (open) { show("home"); hide("fMain"); hide("authTabs"); hide("fBlocked"); hide("fPlans"); msg("authMsg", T("Comprobando su suscripción…"), true); }
+  return nativeCall("subQuery", [S.uid || ""], 25000).then(function(r){
+    if (!r || !r.ok) {
+      if (trialActive()) { if (open) startTrialApp(); return true; }
+      if (!open && !SUB.active && TR.end > 0) { showPlans(); return false; }
+      if (open) showBlocked("Sin conexión", "No se pudo comprobar su suscripción con Google Play. Revise su internet y toque «Revisar de nuevo».", false);
+      return false;
+    }
+    SUB.active = r.active ? r : null;
+    saveSubToDb(r);
+    if (r.active) { if (open) startApp(); updateSubRow(); return true; }
+    if (trialActive()) {
+      if (open) startTrialApp();
+      updateSubRow(); return true;
+    }
+    showPlans(r.otherAccount ? "Esta cuenta de Google Play ya tiene una suscripción vinculada a otro correo de la app. Entre con ese correo, o use otra cuenta de Google Play." : "");
+    return false;
+  });
+}
+function updateSubRow(){
+  var a = SUB.active, tr = inTrial(), show_ = !S.isAdmin && (a || S.manual || tr);
+  $("subRow").classList.toggle("hidden", !show_);
+  updateTrialBar();
+  $("btnSubPlans").classList.toggle("hidden", !tr);
+  $("subLbl").textContent = tr ? T("Prueba gratis") : T("Suscripción");
+  if (!show_) return;
+  if (tr) { $("btnManage").classList.add("hidden"); $("subTxt").textContent = T("termina el {f}").replace("{f}", fdate({ toDate: function(){ return new Date(TR.end - TR.offset); } })); return; }
+  if (S.manual && !a) { $("subTxt").textContent = T("Acceso gratis otorgado por el administrador"); $("btnManage").classList.add("hidden"); return; }
+  $("btnManage").classList.remove("hidden");
+  $("subTxt").textContent = (a.plan === "anual" ? T("Plan anual") : T("Plan mensual")) + " · " + (a.autoRenewing ? T("se renueva automáticamente") : T("cancelada, activa hasta el fin del periodo"));
+}
+function startSubWatch(){
+  clearInterval(SUB.timer);
+  startTrialWatch();
+  if (S.isAdmin || S.manual || !hasBilling()) return;
+  SUB.timer = setInterval(function(){ checkSubscription(false); }, 6 * 3600 * 1000);
+}
+Array.prototype.forEach.call(document.querySelectorAll("#fPlans .plan"), function(b){
+  b.onclick = function(){ selectPlan(b.getAttribute("data-plan")); };
+});
+$("btnSubscribe").onclick = function(){
+  if (!hasBilling()) return msg("plansMsg", "Para suscribirse, instale la app desde Google Play.");
+  var btn = this; btn.disabled = true; msg("plansMsg", T("Abriendo Google Play…"), true);
+  nativeCall("subBuy", [SUB.plan, S.uid || ""], 0).then(function(r){
+    btn.disabled = false;
+    if (r && r.ok && r.active) { msg("plansMsg", T("¡Listo! Su suscripción está activa."), true); SUB.active = r; saveSubToDb(r); toast(T("¡Bienvenido!")); return startApp(); }
+    if (r && r.code === "USER_CANCELED") return msg("plansMsg", "");
+    if (r && r.code === "PENDING") return msg("plansMsg", T("Su pago está pendiente. Cuando Google Play lo confirme, toque «Ya tengo una suscripción»."), true);
+    if (r && r.code === "ITEM_ALREADY_OWNED") return checkSubscription(true);
+    msg("plansMsg", T("No se pudo completar la suscripción.") + (r && r.msg ? " (" + r.msg + ")" : ""));
+  });
+};
+$("btnRestore").onclick = function(){ msg("plansMsg", T("Revisando…"), true);
+  (window.MTSNative && window.MTSNative.subRestore ? nativeCall("subRestore", [], 60000) : Promise.resolve()).then(function(){ return checkSubscription(true); }).then(function(ok){ if (!ok) msg("plansMsg", T("No encontramos una suscripción activa en esta cuenta de Google Play.")); }); };
+$("btnOut3").onclick = function(){ $("btnOut2").click(); };
+$("btnBackApp").onclick = function(){ if (trialActive()) startApp(); };
+$("btnTrialPlans").onclick = $("btnSubPlans").onclick = function(){ showPlans(); };
+$("btnManage").onclick = function(){
+  var pkg = CFG.packageName || "com.mirrortradepro.scanner";
+  var url = IOS ? "https://apps.apple.com/account/subscriptions" : "https://play.google.com/store/account/subscriptions?sku=boomcrash_premium&package=" + pkg;
+  if (window.MTSNative && window.MTSNative.openUrl) window.MTSNative.openUrl(url); else window.open(url, "_blank");
+};
+
+/* ---------- Eliminar cuenta (requisito de Google Play) ---------- */
+$("btnDelAsk").onclick = function(){ $("delBox").classList.toggle("hidden"); };
+$("btnDel").onclick = function(){
+  if (!fb || !fb.auth.currentUser) return;
+  var u = fb.auth.currentUser, A = fb.A, F = fb.F, pw = $("delPass").value;
+  if (!pw) return msg("delMsg", "Escriba su contraseña.");
+  msg("delMsg", "Eliminando…", true);
+  A.reauthenticateWithCredential(u, A.EmailAuthProvider.credential(u.email, pw))
+    .then(function(){ return F.deleteDoc(F.doc(fb.db, "usuarios", u.uid)).catch(function(){}); })
+    .then(function(){ try { localStorage.clear(); } catch(e){} S.flash = "Su cuenta fue eliminada."; return A.deleteUser(u); })
+    .catch(function(e){ msg("delMsg", authErr(e)); });
+};
+
+/* ---------- Panel del administrador ---------- */
+var USERS = [], uFilter = "all";
+function fdate(ts){ var d = ts && ts.toDate ? ts.toDate() : null; return d ? d.toLocaleDateString((window.MTS_LOCALE||"es-CO")) + " " + hhmm(d.getTime()) : "—"; }
+function loadUsers(){
+  if (!fb || !S.isAdmin) { $("uList").innerHTML = '<div class="empty">El panel funciona cuando Firebase está conectado.</div>'; return; }
+  $("uList").innerHTML = '<div class="empty">Cargando usuarios…</div>';
+  fb.F.getDocs(fb.F.collection(fb.db, "usuarios")).then(function(snap){
+    USERS = snap.docs.map(function(d){ var x = d.data(); x.id = d.id; return x; });
+    USERS.sort(function(a,b){ var ta = a.creado && a.creado.toMillis ? a.creado.toMillis() : 0, tb = b.creado && b.creado.toMillis ? b.creado.toMillis() : 0; return tb - ta; });
+    renderUsers();
+  }).catch(function(e){ $("uList").innerHTML = '<div class="empty">No se pudo cargar: ' + e.message + '</div>'; });
+}
+function trialEndU(u){ var s = tsMs(u.pruebaInicio); return s ? s + TRIAL_MS : 0; }
+function hasAccessU(u){ return u.estado !== "bloqueado" && (u.manual || ADMINS.indexOf((u.email||"").toLowerCase()) >= 0 || (u.suscripcion && u.suscripcion.activa) || trialEndU(u) > Date.now()); }
+function renderUsers(){
+  var c = { activo:0, pendiente:0, bloqueado:0 }; USERS.forEach(function(u){ c[u.estado] = (c[u.estado]||0) + 1; });
+  $("uAll").textContent = USERS.length; $("uAct").textContent = c.activo; $("uPen").textContent = USERS.filter(hasAccessU).length; $("uBlk").textContent = c.bloqueado;
+  var q = $("uSearch").value.trim().toLowerCase();
+  var L = USERS.filter(function(u){ return (uFilter === "all" || (uFilter === "sub" ? hasAccessU(u) : u.estado === uFilter)) && (!q || (u.email||"").indexOf(q) >= 0); });
+  $("uList").innerHTML = L.length ? L.map(function(u){
+    var acts = [];
+    if (ADMINS.indexOf((u.email||"").toLowerCase()) >= 0) return '<div class="urow"><div class="em">' + u.email + '<span class="st activo">ADMINISTRADOR</span></div><div class="mt">Registro: ' + fdate(u.creado) + ' · Último acceso: ' + fdate(u.ultimoAcceso) + '</div></div>';
+    if (!u.manual || u.estado !== "activo") acts.push('<button data-a="aprobar" data-id="'+u.id+'" style="color:var(--boom)">Dar acceso gratis</button>');
+    else acts.push('<button data-a="quitar" data-id="'+u.id+'" style="color:var(--hot)">Quitar acceso gratis</button>');
+    if (u.estado !== "bloqueado") acts.push('<button data-a="bloquear" data-id="'+u.id+'" style="color:var(--crash)">Bloquear</button>');
+    var sb = u.suscripcion, subTxt = u.manual ? '<span style="color:var(--boom)">★ Acceso gratis (otorgado por usted)</span>' :
+      (sb && sb.activa ? '<span style="color:var(--boom)">✓ Suscripción ' + (sb.plan === "anual" ? "anual" : "mensual") + (sb.renueva ? "" : " (cancelada)") + '</span>' :
+       trialEndU(u) > Date.now() ? '<span style="color:var(--hot)">⏳ En prueba gratis hasta ' + fdate({ toDate: function(){ return new Date(trialEndU(u)); } }) + '</span>' :
+       '<span style="color:var(--muted)">' + (trialEndU(u) ? 'Prueba gratis terminada · ' : '') + 'Sin suscripción activa</span>');
+    return '<div class="urow"><div class="em">' + (u.email||"(sin correo)") + '<span class="st ' + u.estado + '">' + String(u.estado||"").toUpperCase() + '</span></div>' +
+      '<div class="mt">' + (u.verificado === false ? '<span style="color:var(--hot)">✉ Correo sin verificar</span><br>' : '') + subTxt + '<br>Origen: ' + (u.origen === "play" ? "Google Play ✓" : u.origen === "ios" ? "App Store ✓" : (u.origen || "—")) +
+      '<br>Registro: ' + fdate(u.creado) + ' · Último acceso: ' + fdate(u.ultimoAcceso) + '</div>' +
+      '<div class="ac">' + acts.join("") + '</div></div>';
+  }).join("") : '<div class="empty">No hay usuarios en esta categoría.</div>';
+  Array.prototype.forEach.call($("uList").querySelectorAll("button[data-a]"), function(b){
+    b.onclick = function(){
+      var id = b.getAttribute("data-id"), a = b.getAttribute("data-a");
+      var upd = a === "aprobar" ? { estado:"activo", manual:true } : a === "quitar" ? { manual:false } : { estado:"bloqueado" };
+      b.disabled = true;
+      fb.F.updateDoc(fb.F.doc(fb.db, "usuarios", id), upd).then(function(){
+        USERS.forEach(function(u){ if (u.id === id) Object.assign(u, upd); }); renderUsers(); toast(a === "aprobar" ? "Acceso gratis otorgado" : a === "quitar" ? "Acceso gratis retirado" : "Usuario bloqueado");
+      }).catch(function(e){ toast("Error: " + e.message); b.disabled = false; });
+    };
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll("#pgAdm .sum button"), function(b){
+  b.onclick = function(){ uFilter = b.getAttribute("data-u"); Array.prototype.forEach.call(document.querySelectorAll("#pgAdm .sum button"), function(x){ x.classList.toggle("on", x === b); }); renderUsers(); };
+});
+$("uSearch").oninput = renderUsers;
+$("btnUReload").onclick = loadUsers;
+$("btnCfgSave").onclick = function(){
+  if (!fb) return msg("cfgMsg", "Requiere Firebase conectado.");
+  var data = { aviso: $("cAviso").value.trim(), telegramLink: $("cTgLink").value.trim() };
+  fb.F.setDoc(fb.F.doc(fb.db, "config", "app"), data, { merge:true }).then(function(){
+    remote.aviso = data.aviso; remote.telegramLink = data.telegramLink;
+    $("notice").textContent = data.aviso; $("notice").classList.toggle("hidden", !data.aviso);
+    msg("cfgMsg", "Guardado. Todos los usuarios lo verán al abrir la app.", true);
+  }).catch(function(e){ msg("cfgMsg", "Error: " + e.message); });
+};
+
+/* ================= CONEXIÓN CON DERIV ================= */
+var APPID = CFG.derivAppId || 1089;
+var URLS = [
+  "wss://api.derivws.com/trading/v1/options/ws/public",
+  "wss://ws.derivws.com/websockets/v3?app_id=" + APPID,
+  "wss://ws.binaryws.com/websockets/v3?app_id=" + APPID,
+  "wss://green.derivws.com/websockets/v3?app_id=" + APPID
+];
+function hostOf(u){ return u.replace("wss://","").split("/")[0]; }
+
+var S = { tf: CFG.defaultTimeframe || 300, data:{}, res:{}, indices:[], lastTick:0, alerted:{}, running:false, polls:{}, alts:{}, errs:{}, log:[],
+          filter:"all", sheetSym:null, unread:0, sent: store("sent") || {}, live:{}, isAdmin:false, user:"",
+          sound: store("sound") !== false, vib: store("vib") !== false,
+          tg: store("tg") || { on:false, token:"", chat:"" },
+          hist: store("hist") || [] };
+var feed = null;
+
+function diag(t){ S.log.unshift(hhmm(Date.now())+"  "+t); S.log = S.log.slice(0,5); $("diag").innerHTML = S.log.map(function(x){ return x.replace(/</g,"&lt;"); }).join("<br>"); }
+
+function Feed(){ this.i = 0; this.rid = 1; this.cb = {}; this.alive = false; this.stopped = false; this.gen = 0; }
+Feed.prototype.open = function(){
+  var self = this, url = URLS[this.i], gen = ++this.gen, ws;
+  this.gotData = false; this.alive = false;
+  diag("Conectando a " + hostOf(url) + "…");
+  try { ws = new WebSocket(url); } catch(e){ diag("No se pudo abrir " + hostOf(url)); return this.next(); }
+  this.ws = ws;
+  this.watch = setTimeout(function(){ if (gen === self.gen && !self.gotData){ diag(hostOf(url) + " no respondió."); self.next(); } }, 9000);
+  ws.onopen = function(){
+    if (gen !== self.gen) return;
+    self.alive = true; S.server = hostOf(url);
+    clearInterval(self.pinger); self.pinger = setInterval(function(){ self.send({ ping:1 }); }, 25000);
+    diag("Conectado a " + hostOf(url));
+    if (self.onOpen) self.onOpen();
+  };
+  ws.onmessage = function(ev){
+    if (gen !== self.gen) return;
+    var m; try { m = JSON.parse(ev.data); } catch(e){ return; }
+    if (m.errors && m.errors[0]) { diag("Servidor: " + (m.errors[0].message || "error")); return; }
+    if (m.msg_type === "active_symbols" || m.msg_type === "candles" || m.msg_type === "ohlc") self.gotData = true;
+    if (m.req_id && self.cb[m.req_id]) { var f = self.cb[m.req_id]; delete self.cb[m.req_id]; f(m); }
+    if (self.onMsg) self.onMsg(m);
+  };
+  ws.onerror = function(){ if (gen === self.gen) diag("Error de red con " + hostOf(url)); };
+  ws.onclose = function(){
+    if (gen !== self.gen) return;
+    self.alive = false; clearInterval(self.pinger); clearTimeout(self.watch);
+    if (self.stopped) return;
+    if (!self.gotData) self.i = (self.i + 1) % URLS.length;
+    diag("Conexión cerrada. Reintentando…");
+    setTimeout(function(){ if (gen === self.gen && !self.stopped) self.open(); }, 2000);
+  };
+};
+Feed.prototype.next = function(){ this.i = (this.i + 1) % URLS.length; this.kill(); var self = this; setTimeout(function(){ if (!self.stopped) self.open(); }, 600); };
+Feed.prototype.kill = function(){ this.gen++; clearInterval(this.pinger); clearTimeout(this.watch); this.alive = false; try { this.ws.onclose = null; this.ws.close(); } catch(e){} };
+Feed.prototype.send = function(o){ if (this.ws && this.ws.readyState === 1) this.ws.send(JSON.stringify(o)); };
+Feed.prototype.request = function(o, timeout){
+  var self = this, id = this.rid++; o.req_id = id;
+  return new Promise(function(res){ self.cb[id] = res; self.send(o); if (timeout) setTimeout(function(){ if (self.cb[id]) { delete self.cb[id]; res(null); } }, timeout); });
+};
+Feed.prototype.stop = function(){ this.stopped = true; this.kill(); };
+function toCandles(arr){ return (arr||[]).map(function(c){ return { time:+c.epoch, open:+c.open, high:+c.high, low:+c.low, close:+c.close }; }); }
+
+
+
+/* ================= SCANNER ================= */
+function startApp(){
+  hide("home"); show("app"); window.scrollTo(0,0);
+  if (!store("riesgo_ok")) show("riskBox");
+  hide("fPlans"); updateSubRow(); startSubWatch();
+  if (remote.aviso) { $("notice").textContent = remote.aviso; show("notice"); }
+  $("tgLink").href = remote.telegramLink || CFG.telegramLink;
+  $("whoami").textContent = (S.user || "") + (S.isAdmin ? " · administrador" : "");
+  loadSltp();
+  applyRole();
+  if (S.isAdmin) buildSltpEditor();
+  if (S.running) return; S.running = true;
+  S.indices = C.INDICES.map(function(ix){ return Object.assign({}, ix, { symbol: ix.fallback }); });
+  buildSeg($("tfs"), function(){ return S.tf; }, function(v){ S.tf = v; subscribeAll(); });
+  initSettings(); renderFeed(); render();
+  feed = new Feed(); feed.onOpen = initFeed; feed.onMsg = onMessage; feed.open();
+  if (!S.timers) { S.timers = true; setInterval(tickUi, 1000); setInterval(watchdog, 15000); }
+}
+function stopApp(){ if (feed) { feed.stop(); feed = null; } S.running = false; stopPolls(); if (typeof SUB !== "undefined") clearInterval(SUB.timer); if (typeof TR !== "undefined") { clearInterval(TR.timer); clearTimeout(TR.endT); } }
+
+/* Solo el administrador ve y cambia Telegram y la conexión */
+function applyRole(){
+  $("adminArea").classList.toggle("hidden", !S.isAdmin);
+  $("pinArea").classList.toggle("hidden", S.isAdmin || hasFirebase);
+  $("navAdm").classList.toggle("hidden", !(S.isAdmin && hasFirebase));
+  $("delArea").classList.toggle("hidden", !hasFirebase || S.isAdmin);
+  if (S.isAdmin && hasFirebase) { $("cAviso").value = remote.aviso || ""; $("cTgLink").value = remote.telegramLink || CFG.telegramLink || ""; }
+}
+$("btnPin").onclick = function(){
+  if ($("pin").value === String(CFG.adminPin || "")) {
+    S.isAdmin = true; store("adminOk", true); $("pin").value = ""; msg("pinMsg","");
+    $("whoami").textContent = (S.user || "") + " · administrador"; applyRole(); initSettings(); buildSltpEditor();
+  } else msg("pinMsg", "Clave incorrecta.");
+};
+
+function initFeed(){
+  feed.request({ active_symbols:"brief" }, 7000).then(function(m){
+    if (m && m.active_symbols) { S.indices = C.resolveSymbols(m.active_symbols); diag("Lista de índices recibida."); }
+    subscribeAll();
+  });
+}
+function stopPolls(){ Object.keys(S.polls).forEach(function(k){ clearInterval(S.polls[k]); }); S.polls = {}; }
+function subscribeAll(keep){
+  if (!feed) return;
+  feed.send({ forget_all:"candles" }); stopPolls();
+  if (!keep) { S.data = {}; S.res = {}; }
+  S.errs = {}; S.dirty = true;
+  S.indices.forEach(function(ix, k){ setTimeout(function(){ subscribe(ix.symbol); }, k*120); });
+  if (CV.open && CV.tf !== S.tf) chartSubscribe();
+}
+function subscribe(sym){ feed.send({ ticks_history:sym, style:"candles", granularity:S.tf, count:400, end:"latest", adjust_start_time:1, subscribe:1 }); }
+function poll(sym){
+  if (S.polls[sym]) return;
+  var go = function(){ if (feed) feed.send({ ticks_history:sym, style:"candles", granularity:S.tf, count:400, end:"latest", adjust_start_time:1 }); };
+  go(); S.polls[sym] = setInterval(go, 3000);
+}
+function altSymbol(sym){
+  var tried = S.alts[sym] || (S.alts[sym] = [sym]);
+  var opts = [sym.replace(/N$/,""), sym + "N"];
+  for (var i=0;i<opts.length;i++) if (tried.indexOf(opts[i]) < 0) { tried.push(opts[i]); return opts[i]; }
+  return null;
+}
+function ixOf(s){ for (var i=0;i<S.indices.length;i++) if (S.indices[i].symbol === s) return S.indices[i]; return null; }
+function onMessage(m){
+  var echo = m.echo_req || {};
+  if (m.error) {
+    var sym = echo.ticks_history;
+    if (!sym || m.error.code === "AlreadySubscribed") return;
+    S.errs[sym] = m.error.message;
+    if (/symbol/i.test(m.error.code + m.error.message) && echo.subscribe) {
+      var alt = altSymbol(sym);
+      if (alt) { S.indices.forEach(function(ix){ if (ix.symbol === sym) ix.symbol = alt; }); return subscribe(alt); }
+    }
+    diag(sym + ": " + m.error.message);
+    if (echo.subscribe) poll(sym);
+    return;
+  }
+  if (m.msg_type === "candles") {
+    var s = echo.ticks_history, g = +echo.granularity;
+    if (g === S.tf && ixOf(s)) { S.data[s] = toCandles(m.candles); S.lastTick = Date.now(); delete S.errs[s]; recompute(s); if (S.refreshing) refreshGot(s); }
+    if (CV.open && s === CV.sym && g === CV.tf) chartSet(toCandles(m.candles));
+  }
+  if (m.msg_type === "ohlc" && m.ohlc) {
+    var o = m.ohlc, s2 = o.symbol, g2 = +o.granularity;
+    var c = { time:+o.open_time, open:+o.open, high:+o.high, low:+o.low, close:+o.close };
+    if (g2 === S.tf && S.data[s2]) {
+      var arr = S.data[s2], last = arr[arr.length-1];
+      if (last && last.time === c.time) arr[arr.length-1] = c; else if (!last || c.time > last.time) { arr.push(c); if (arr.length > 500) arr.shift(); }
+      S.lastTick = Date.now(); recompute(s2);
+    }
+    if (CV.open && s2 === CV.sym && g2 === CV.tf) chartUpdate(c);
+  }
+}
+function watchdog(){
+  if (!feed || !S.running) return;
+  if (feed.alive && S.lastTick && Date.now() - S.lastTick > 60000) { diag("Los datos se detuvieron. Reconectando…"); S.lastTick = 0; feed.next(); }
+}
+$("btnRetry").onclick = function(){ if (feed) { diag("Reconexión manual."); feed.i = 0; feed.kill(); feed.stopped = false; feed.open(); } else startApp(); };
+
+/* Alertas: se envían al llegar al 90% y al 95%.
+   Se recuerda lo enviado (aunque se cierre la app) para no repetir la misma señal. */
+var REPEAT_MS = 45*60*1000;
+function recompute(sym){
+  var ix = ixOf(sym); if (!ix) return;
+  var r = C.analyze(ix, S.data[sym], CFG, 0, 0); if (!r) return;
+  S.res[sym] = r;
+  var lvls = CFG.alertLevels || [90,95], changed = false;
+  lvls.forEach(function(lv){
+    var k = ix.name + "|" + lv;
+    if (r.pct >= lv && !S.sent[k]) { S.sent[k] = Date.now(); changed = true; fireSignal(r, lv); }
+    else if (r.pct >= lv && S.sent[k] && !S.live[k] && Date.now() - S.sent[k] > REPEAT_MS) { S.sent[k] = Date.now(); changed = true; fireSignal(r, lv); }
+    if (r.pct >= lv) S.live[k] = true;
+  });
+  if (r.pct < 85) lvls.forEach(function(lv){ var k = ix.name + "|" + lv; if (S.sent[k]) { delete S.sent[k]; changed = true; } delete S.live[k]; });
+  if (changed) store("sent", S.sent);
+  S.dirty = true;
+}
+
+function fireSignal(r, lv){
+  var d = C.decimals(r.price);
+  var sig = { t:Date.now(), name:r.name, kind:r.kind, side:r.side, pct:r.pct, lv:lv, entry:r.price, sl:r.sl, tp:r.tp, rsi:r.rsi, ema:r.emaOk, d:d, tf:tfName(S.tf), tg:null };
+  S.hist.unshift(sig); S.hist = S.hist.slice(0,60); store("hist", S.hist);
+  if (!$("pgSig").classList.contains("hidden")) S.unread = 0; else S.unread++;
+  toast((r.kind === "crash" ? "▼ " : "▲ ") + r.side + " " + r.name + " · " + r.pct + "% · precio " + fmt(r.price,d));
+  if (S.vib && navigator.vibrate) navigator.vibrate(lv >= 95 ? [220,90,220,90,220] : [220,90,220]);
+  if (S.isAdmin && S.tg.on && S.tg.token && S.tg.chat) {
+    sendTelegram(tgText(sig)).then(function(ok){ sig.tg = ok; store("hist", S.hist); renderFeed(); });
+  }
+  renderFeed();
+}
+function tgText(s, test){
+  var crash = s.kind === "crash";
+  var icon = crash ? "🔴" : "🟢";
+  var head = s.lv >= 95 ? "⚡ <b>ALERTA RSI EXTREMA · NIVEL 95%</b>" : "🔔 <b>ALERTA RSI · NIVEL 90%</b>";
+  return (test ? "🧪 <i>Ejemplo de formato</i>\n" : "") + head + "\n\n" + icon + " <b>" + s.name.toUpperCase() + " · " + (crash ? "SOBRECOMPRA" : "SOBREVENTA") + "</b>\n\n" +
+    "📍 Precio al momento de la alerta: <b>" + fmt(s.entry, s.d) + "</b>\n" +
+    "📊 RSI(" + CFG.rsiPeriod + "): <b>" + fmt(s.rsi,1) + "</b> · Nivel " + s.pct + "%\n" +
+    "🧭 Dirección de la estrategia: " + (crash ? "venta" : "compra") + "\n" +
+    "📈 EMA 200: " + (s.ema == null ? "—" : s.ema ? "a favor" : "en contra ⚠️") + "\n" +
+    "⏱ " + s.tf + " · " + hhmm(s.t) + "\n\nℹ️ <i>Alerta informativa. No es recomendación de inversión.</i>";
+}
+
+/* Llamada a la API de Telegram. En el APK usa la conexión nativa del celular. */
+var tgCbs = {}, tgN = 0;
+window.__mtsCb = function(id, txt){ var f = tgCbs[id]; delete tgCbs[id]; if (f) { try { f(JSON.parse(txt)); } catch(e){ f({ ok:false, description:"Respuesta inválida" }); } } };
+function tgApi(token, method, params){
+  var url = "https://api.telegram.org/bot" + token + "/" + method, body = JSON.stringify(params || {});
+  if (window.MTSNative && window.MTSNative.post) {
+    return new Promise(function(res){
+      var id = "t" + (++tgN); tgCbs[id] = res;
+      setTimeout(function(){ if (tgCbs[id]) { delete tgCbs[id]; res({ ok:false, description:"NETWORK: tiempo agotado" }); } }, 20000);
+      window.MTSNative.post(url, body, id);
+    });
+  }
+  return fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body:body })
+    .then(function(r){ return r.json(); })
+    .catch(function(){ return { ok:false, description:"NETWORK: sin conexión" }; });
+}
+function normChat(v){
+  v = (v || "").trim().replace(/\s+/g, "");
+  if (!v) return "";
+  var m = v.match(/t(?:elegram)?\.me\/(.+)$/i); if (m) v = m[1];
+  if (/^\+|^joinchat/i.test(v)) return "INVITE";
+  if (/^-?\d+$/.test(v)) return v;
+  v = v.replace(/^@+/, "").replace(/\/.*$/, "");
+  return "@" + v;
+}
+function explain(d){
+  d = String(d || "");
+  if (/NETWORK/.test(d)) return "No hay conexión con Telegram. Revise el internet del celular.";
+  if (/Unauthorized|401/i.test(d)) return "El token no es válido. Cópielo de nuevo completo desde @BotFather (incluye los dos puntos « : »).";
+  if (/chat not found/i.test(d)) return "No encuentro ese canal. Toque «Buscar mi canal automáticamente».";
+  if (/not a member|kicked|have no rights|not enough rights|need administrator/i.test(d)) return "El bot no es administrador del canal o no tiene permiso de «Publicar mensajes».";
+  if (/bots can't send messages to bots/i.test(d)) return "Puso el nombre del bot en la casilla del canal. Ahí va el @usuario del canal.";
+  return "Telegram respondió: " + d;
+}
+function sendTelegram(text){
+  var t = S.tg;
+  return tgApi(t.token, "sendMessage", { chat_id: t.chat || "@mirrortradepro", text:text, parse_mode:"HTML", disable_web_page_preview:true })
+    .then(function(j){ if (!j.ok) diag("Telegram: " + explain(j.description)); S.tgLastErr = j.ok ? "" : explain(j.description); return !!j.ok; });
+}
+
+/* Revisa todo paso a paso y dice exactamente qué falla */
+function tgLine(ok, text, tip){ return '<span class="'+(ok?"ok":"bad")+'">'+(ok?"✓ ":"✗ ")+text+'</span>'+(tip?'<span class="tip">'+tip+'</span>':'')+'<br>'; }
+function checkTg(){
+  saveTg(); var t = S.tg, out = $("tgMsg"), html = "";
+  if (!t.token) { out.innerHTML = tgLine(false, "Falta el token.", "Péguelo en la casilla 1."); return Promise.resolve(false); }
+  if (!/^\d{6,}:[\w-]{20,}$/.test(t.token)) { out.innerHTML = tgLine(false, "El token parece incompleto.", "Debe verse así: 7123456789:AAH4kX9… Cópielo de nuevo desde @BotFather."); return Promise.resolve(false); }
+  out.innerHTML = "Revisando…";
+  var bot;
+  return tgApi(t.token, "getMe").then(function(j){
+    if (!j.ok) { out.innerHTML = tgLine(false, explain(j.description)); return false; }
+    bot = j.result; html += tgLine(true, "Token correcto. Su bot es @" + bot.username);
+    if (!t.chat) { out.innerHTML = html + tgLine(false, "Falta el canal.", "Toque «Buscar mi canal automáticamente»."); return false; }
+    if (t.chat === "INVITE") { out.innerHTML = html + tgLine(false, "Pegó un enlace de invitación privado.", "Toque «Buscar mi canal automáticamente»."); return false; }
+    if (t.chat.toLowerCase() === ("@" + bot.username).toLowerCase()) { out.innerHTML = html + tgLine(false, "En «Canal» puso el nombre de su BOT.", "Ahí va el @usuario del CANAL. Toque «Buscar mi canal automáticamente»."); return false; }
+    return tgApi(t.token, "getChat", { chat_id:t.chat }).then(function(c){
+      if (!c.ok) { out.innerHTML = html + tgLine(false, "No encuentro el canal " + t.chat + ".", "Si es un canal privado o el nombre no es exacto, toque «Buscar mi canal automáticamente»."); return false; }
+      html += tgLine(true, "Canal encontrado: «" + c.result.title + "»");
+      return tgApi(t.token, "getChatMember", { chat_id:t.chat, user_id:bot.id }).then(function(mm){
+        var st = mm.ok ? mm.result.status : "";
+        if (st !== "administrator" && st !== "creator") { out.innerHTML = html + tgLine(false, "El bot NO es administrador del canal.", "Canal → Administradores → Agregar administrador → @" + bot.username + " → active «Publicar mensajes» → Guardar."); return false; }
+        if (mm.result.can_post_messages === false) { out.innerHTML = html + tgLine(false, "El bot es administrador pero sin permiso de «Publicar mensajes».", "Canal → Administradores → @" + bot.username + " → active «Publicar mensajes»."); return false; }
+        out.innerHTML = html + tgLine(true, "El bot es administrador y puede publicar.") + '<span class="ok"><b>Todo listo.</b> Toque «Enviar mensaje de prueba».</span>';
+        return true;
+      });
+    });
+  });
+}
+
+/* Busca los canales donde el bot fue agregado como administrador */
+function findChannel(){
+  saveTg(); var t = S.tg, out = $("tgMsg");
+  if (!t.token) { out.innerHTML = tgLine(false, "Primero pegue el token en la casilla 1."); return; }
+  out.innerHTML = "Buscando sus canales…";
+  tgApi(t.token, "getUpdates", { allowed_updates:["channel_post","my_chat_member"], limit:100 }).then(function(j){
+    if (!j.ok) { out.innerHTML = tgLine(false, explain(j.description)); return; }
+    var found = {};
+    (j.result || []).forEach(function(u){
+      var ch = (u.channel_post && u.channel_post.chat) || (u.my_chat_member && u.my_chat_member.chat);
+      if (ch && ch.type === "channel") found[ch.id] = ch;
+    });
+    var list = Object.keys(found).map(function(k){ return found[k]; });
+    if (!list.length) {
+      out.innerHTML = tgLine(false, "Todavía no encuentro ningún canal.",
+        "1) Agregue el bot como administrador del canal (con «Publicar mensajes»).<br>2) Escriba cualquier mensaje en el canal, por ejemplo «hola».<br>3) Vuelva aquí y toque de nuevo «Buscar mi canal automáticamente».");
+      return;
+    }
+    out.innerHTML = '<span class="ok">Toque su canal para elegirlo:</span>' + list.map(function(ch){
+      var id = ch.username ? "@" + ch.username : String(ch.id);
+      return '<button class="chfound" data-id="'+id+'"><b>'+String(ch.title).replace(/</g,"&lt;")+'</b><br><small style="color:var(--muted)">'+id+'</small></button>';
+    }).join("");
+    Array.prototype.forEach.call(out.querySelectorAll(".chfound"), function(b){
+      b.onclick = function(){ $("tgChat").value = b.getAttribute("data-id"); saveTg(); checkTg(); };
+    });
+  });
+}
+
+
+
+function renderFeed(){
+  var n = S.hist.length;
+  $("sigCount").textContent = n ? n + " en total" : "";
+  var b = $("badge"); b.textContent = S.unread; b.classList.toggle("hidden", !S.unread);
+  $("feed").innerHTML = n ? S.hist.map(function(s){
+    var col = s.kind === "crash" ? "var(--crash)" : "var(--boom)";
+    return '<div class="it"><div class="ico" style="background:'+col+'22;color:'+col+'">'+(s.kind==="crash"?"▼":"▲")+'</div>' +
+      '<div class="h">'+s.side+' '+s.name+'</div><div class="p" style="color:'+(s.lv>=95?"var(--crash)":"var(--hot)")+'">'+s.pct+'%</div>' +
+      '<div class="s">Precio <b style="color:var(--text)">'+fmt(s.entry,s.d)+'</b> · RSI '+fmt(s.rsi,1)+'<br>'+s.tf+' · '+hhmm(s.t)+'</div>' +
+      '<div class="tg" style="color:'+(s.tg===true?"var(--boom)":s.tg===false?"var(--crash)":"var(--faint)")+'">'+(s.tg===true?"Telegram ✓":s.tg===false?"Telegram ✗":"")+'</div></div>';
+  }).join("") : '<div class="empty">Aún no hay señales.<br>Cuando un índice llegue al 90% o al 95%, aparecerá aquí con su precio de entrada.</div>';
+}
+$("btnClear").onclick = function(){ S.hist = []; store("hist", S.hist); renderFeed(); };
+
+/* ================= AJUSTES ================= */
+function tgStateUi(){
+  var on = S.tg.on && S.tg.token && S.tg.chat;
+  var el = $("tgState"); el.className = "tgState " + (on ? "on" : "off");
+  el.textContent = on ? "● Envío automático ACTIVADO → " + S.tg.chat : (S.tg.on ? "● Falta token o canal" : "● Envío automático APAGADO");
+  $("swTg").classList.toggle("on", !!S.tg.on);
+}
+function initSettings(){
+  function sw(id, val, set){ var el = $(id); el.classList.toggle("on", !!val); el.onclick = function(){ var v = !el.classList.contains("on"); el.classList.toggle("on", v); set(v); }; }
+  sw("swSound", S.sound, function(v){ S.sound = v; store("sound", v); sndUi(); if (v) sonarPing(); });
+  sndUi();
+  sw("swVib", S.vib, function(v){ S.vib = v; store("vib", v); if (v && navigator.vibrate) navigator.vibrate(120); });
+  if (!S.isAdmin) return;
+  sw("swTg", S.tg.on, function(v){ S.tg.on = v; saveTg(); tgStateUi(); });
+  $("tgToken").value = S.tg.token || ""; $("tgChat").value = S.tg.chat || "";
+  $("tgToken").onchange = function(){ saveTg(); tgStateUi(); }; $("tgChat").onchange = function(){ saveTg(); tgStateUi(); };
+  $("btnTgFind").onclick = findChannel;
+  $("btnTgCheck").onclick = checkTg;
+  $("btnTgTest").onclick = function(){
+    checkTg().then(function(ok){
+      if (!ok) return;
+      sendTelegram("✅ <b>Mirror Trade Pro</b> está conectado a este canal.\nLas señales del 90% y 95% llegarán aquí con su precio de entrada.")
+        .then(function(sent){
+          if (sent) { S.tg.on = true; saveTg(); tgStateUi(); }
+          $("tgMsg").innerHTML += sent ? '<br><span class="ok"><b>Mensaje enviado y envío automático ACTIVADO.</b></span>' : '<br><span class="bad">✗ ' + S.tgLastErr + '</span>';
+        });
+    });
+  };
+  $("btnTgSample").onclick = function(){
+    var best = Object.keys(S.res).map(function(k){ return S.res[k]; }).sort(function(a,b){ return b.pct - a.pct; })[0];
+    if (!best) { $("tgMsg").innerHTML = '<span class="bad">Espere a que carguen los datos.</span>'; return; }
+    var s = { t:Date.now(), name:best.name, kind:best.kind, side:best.side, pct:best.pct, lv:90, entry:best.price, sl:best.sl, tp:best.tp, rsi:best.rsi, ema:best.emaOk, d:C.decimals(best.price), tf:tfName(S.tf) };
+    $("tgMsg").textContent = "Enviando…";
+    sendTelegram(tgText(s, true)).then(function(ok){ $("tgMsg").innerHTML = ok ? '<span class="ok">Ejemplo enviado. Así se verán las señales en su canal.</span>' : '<span class="bad">✗ ' + S.tgLastErr + '</span>'; });
+  };
+  tgStateUi();
+}
+function saveTg(){
+  S.tg.token = $("tgToken").value.replace(/\s+/g, "");
+  S.tg.chat = normChat($("tgChat").value);
+  if (S.tg.chat && S.tg.chat !== "INVITE") $("tgChat").value = S.tg.chat;
+  store("tg", S.tg);
+}
+
+/* ================= SONIDO DEL SCANNER =================
+   Sin señales: un "ping" suave de sonar cada vez que la línea vuelve al número 1.
+   Con un índice en 90% o más: alarma rápida y continua. */
+var SCAN_MS = 3600;
+function audio(){
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch(e){}
+  return actx;
+}
+function tone(freq, start, dur, vol, type, endFreq){
+  var a = audio(); if (!a) return;
+  var o = a.createOscillator(), g = a.createGain(), t0 = a.currentTime + start;
+  o.type = type || "sine"; o.frequency.setValueAtTime(freq, t0);
+  if (endFreq) o.frequency.exponentialRampToValueAtTime(endFreq, t0 + dur);
+  o.connect(g); g.connect(a.destination);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.start(t0); o.stop(t0 + dur + 0.02);
+}
+function sonarPing(){ tone(1250, 0, 0.55, 0.07, "sine", 900); tone(1250, 0.28, 0.45, 0.025, "sine", 900); }
+function alarmBeep(k){ tone(k % 2 ? 780 : 1040, 0, 0.13, 0.16, "square"); }
+function inAlarm(){ for (var k in S.res) if (S.res[k].pct >= 90) return true; return false; }
+function scanCycle(){
+  var el = document.querySelector(".scanline"), board = document.querySelector(".board");
+  if (el && board) {
+    el.style.setProperty("--scanEnd", (board.clientHeight - 20) + "px");
+    el.style.animation = "none"; void el.offsetHeight; el.style.animation = "";
+  }
+  if (S.running && S.sound && !inAlarm() && Object.keys(S.res).length) sonarPing();
+}
+var alarmK = 0;
+setInterval(function(){
+  var al = S.running && inAlarm();
+  var el = document.querySelector(".scanline"); if (el) el.classList.toggle("alarm", al);
+  $("sndBtn").classList.toggle("alarm", al && S.sound);
+  if (al && S.sound) alarmBeep(alarmK++);
+}, 260);
+setInterval(scanCycle, SCAN_MS);
+document.documentElement.style.setProperty("--scanT", (SCAN_MS/1000) + "s");
+function sndUi(){
+  var b = $("sndBtn");
+  b.classList.toggle("off", !S.sound);
+  b.setAttribute("aria-label", S.sound ? "Silenciar sonido" : "Activar sonido");
+  b.innerHTML = S.sound
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>Sonido'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5 6 9H3v6h3l5 4zM22 9l-6 6M16 9l6 6"/></svg>Silencio';
+  var sw = $("swSound"); if (sw) sw.classList.toggle("on", S.sound);
+}
+$("sndBtn").onclick = function(){ S.sound = !S.sound; store("sound", S.sound); sndUi(); if (S.sound) sonarPing(); };
+// El navegador exige un toque del usuario para permitir sonido
+document.addEventListener("click", function(){ audio(); }, { once:true, capture:true });
+document.addEventListener("touchstart", function(){ audio(); }, { once:true, capture:true, passive:true });
+
+var actx = null;
+function beep(n){
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    for (var i=0;i<n;i++){
+      var o = actx.createOscillator(), g = actx.createGain(), t0 = actx.currentTime + i*0.2;
+      o.type = "triangle"; o.frequency.value = 660 + i*220; o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.35,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.17);
+      o.start(t0); o.stop(t0+0.19);
+    }
+  } catch(e){}
+}
+function toast(t){ var el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove("show"); }, 5000); }
+function buildSeg(box, get, set){
+  box.innerHTML = "";
+  TF.forEach(function(t){
+    var b = document.createElement("button"); b.textContent = t[0]; if (t[1] === get()) b.className = "on";
+    b.onclick = function(){ set(t[1]); Array.prototype.forEach.call(box.children, function(x){ x.className = x === b ? "on" : ""; }); };
+    box.appendChild(b);
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll("nav.tabs button"), function(b){
+  b.onclick = function(){
+    Array.prototype.forEach.call(document.querySelectorAll("nav.tabs button"), function(x){ x.classList.toggle("on", x === b); });
+    ["pgScan","pgSig","pgSet","pgAdm"].forEach(function(p){ $(p).classList.toggle("hidden", p !== b.getAttribute("data-p")); });
+    if (b.getAttribute("data-p") === "pgSig") { S.unread = 0; renderFeed(); }
+    if (b.getAttribute("data-p") === "pgAdm") loadUsers();
+    if (b.getAttribute("data-p") === "pgSet" && S.isAdmin) buildSltpEditor();
+    window.scrollTo(0,0);
+  };
+});
+function setFilter(f){
+  S.filter = f;
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"), function(x){ x.classList.toggle("on", x.getAttribute("data-f") === f); });
+  Array.prototype.forEach.call(document.querySelectorAll(".sum button"), function(x){ x.classList.toggle("on", x.getAttribute("data-f") === f); });
+  S.dirty = true; tickUi();
+}
+Array.prototype.forEach.call(document.querySelectorAll(".chip"), function(c){ c.onclick = function(){ setFilter(c.getAttribute("data-f")); }; });
+Array.prototype.forEach.call(document.querySelectorAll(".sum button"), function(c){
+  c.onclick = function(){
+    var f = c.getAttribute("data-f");
+    if (f === "best") { var L = list().filter(function(r){ return !r.pending; }); if (L[0]) openSheet(L[0].symbol); return; }
+    setFilter(f);
+  };
+});
+
+/* ================= TABLERO "POPULARIDAD" ================= */
+function list(){
+  return S.indices.map(function(ix){ return S.res[ix.symbol] || { name:ix.name, kind:ix.kind, symbol:ix.symbol, pending:true, pct:-1 }; })
+    .sort(function(a,b){ return b.pct - a.pct; });
+}
+function render(){
+  var L = list(), ready = L.filter(function(r){ return !r.pending; });
+  var zone = ready.filter(function(r){ return r.pct >= 90; });
+  $("sCount").textContent = ready.length + "/10";
+  $("sZone").textContent = zone.length;
+  var best = ready[0];
+  $("sBest").textContent = best ? best.pct + "%" : "—";
+  $("sBest").style.color = best ? (best.kind === "crash" ? "var(--crash)" : "var(--boom)") : "";
+
+  var f = S.filter;
+  var shown = L.map(function(r, i){ r._rank = i + 1; return r; })
+    .filter(function(r){ return f === "all" || f === "best" || (f === "zone" ? r.pct >= 90 : r.kind === f); });
+  $("rows").innerHTML = shown.length ? shown.map(function(r){
+    var name = r.name.toUpperCase();
+    if (r.pending) {
+      return '<div class="prow pend"><div class="rank">'+r._rank+'</div><div class="bar"><div class="t"><span>'+name+'</span><span>'+(S.errs[r.symbol] ? "⚠" : "cargando…")+'</span></div></div></div>';
+    }
+    var txt = '<span>' + name + '</span><span class="pc">' + (r.pct >= 90 ? '⚡ ' : '') + r.pct + '%</span>';
+    return '<button class="prow ' + r.zone + '" data-sym="' + r.symbol + '" aria-label="' + r.name + ', ' + r.side + ' ' + r.pct + '%">' +
+      '<div class="rank">' + r._rank + '</div>' +
+      '<div class="bar"><div class="t">' + txt + '</div>' +
+      '<div class="fill ' + (r.kind === "crash" ? "sell" : "buy") + '" style="clip-path:inset(0 ' + (100 - r.pct) + '% 0 0)"><div class="t">' + txt + '</div></div></div></button>';
+  }).join("") : '<p style="color:#6b6b78;text-align:center;padding:24px 0">Ningún índice en esta categoría por ahora.</p>';
+  Array.prototype.forEach.call($("rows").querySelectorAll("button.prow"), function(b){ b.onclick = function(){ openSheet(b.getAttribute("data-sym")); }; });
+  if (S.sheetSym) renderSheet();
+  renderPrices();
+}
+/* Idioma */
+(window.MTS_LANGS || [["es","Español"],["en","English"]]).forEach(function(l){ var o = document.createElement("option"); o.value = l[0]; o.textContent = l[1]; $("langSel").appendChild(o); });
+$("langSel").value = window.MTS_LANG_CHOICE || "auto";
+$("langSel").onchange = function(){
+  var v = $("langSel").value;
+  try { if (v === "auto") localStorage.removeItem("mts_lang"); else localStorage.setItem("mts_lang", JSON.stringify(v)); } catch(e){}
+  location.reload();
+};
+
+/* ================= ACTUALIZAR LOS DATOS ================= */
+var refreshSeen = {}, refreshTimer = null;
+function setBusy(b){
+  S.refreshing = b;
+  $("btnUpd").classList.toggle("busy", b); $("btnUpdTxt").textContent = b ? "Actualizando…" : "Actualizar";
+  $("ptr").classList.toggle("busy", b);
+}
+function refreshData(){
+  if (S.refreshing || !S.running) return;
+  setBusy(true); refreshSeen = {};
+  if (navigator.vibrate && S.vib) navigator.vibrate(30);
+  if (!feed || !feed.alive) {            // si se cayó la conexión, reconecta
+    if (feed) { feed.i = 0; feed.kill(); feed.stopped = false; feed.open(); } else { S.running = false; startApp(); }
+  } else subscribeAll(true);             // pide de nuevo los 10 índices sin borrar la pantalla
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(function(){ finishRefresh(Object.keys(refreshSeen).length); }, 10000);
+}
+function refreshGot(sym){
+  refreshSeen[sym] = true;
+  if (Object.keys(refreshSeen).length >= S.indices.length) finishRefresh(S.indices.length);
+}
+function finishRefresh(n){
+  if (!S.refreshing) return;
+  clearTimeout(refreshTimer); setBusy(false); hidePtr();
+  toast(n >= S.indices.length ? "✓ Datos actualizados" : (n ? "Actualizados " + n + " de " + S.indices.length + " índices" : "Sin respuesta de Deriv. Revise su internet."));
+}
+$("btnUpd").onclick = refreshData;
+
+/* Arrastrar hacia abajo para actualizar (en la pestaña Scanner, estando arriba) */
+(function(){
+  var y0 = null, dy = 0, ptr = $("ptr"), txt = $("ptrTxt"), LIMIT = 80;
+  function onScan(){ return !$("app").classList.contains("hidden") && !$("pgScan").classList.contains("hidden") && !$("sheet").classList.contains("on") && $("cv").classList.contains("hidden"); }
+  function top(){ var h = document.querySelector("header"); return h ? h.getBoundingClientRect().bottom : 0; }
+  document.addEventListener("touchstart", function(e){
+    if (!onScan() || S.refreshing || window.scrollY > 2) { y0 = null; return; }
+    y0 = e.touches[0].clientY; dy = 0;
+  }, { passive:true });
+  document.addEventListener("touchmove", function(e){
+    if (y0 === null) return;
+    dy = e.touches[0].clientY - y0;
+    if (dy <= 0 || window.scrollY > 2) { hidePtr(); return; }
+    var pull = Math.min(dy * 0.55, 110), t = top();
+    ptr.style.transition = "none"; ptr.style.opacity = Math.min(1, pull / 40);
+    ptr.style.transform = "translateY(" + (t - 30 + pull) + "px) rotate(" + (pull * 3.2) + "deg)";
+    ptr.classList.toggle("ready", pull >= LIMIT);
+    txt.style.opacity = pull > 30 ? 1 : 0; txt.style.transform = "translateY(" + (t + 22 + pull) + "px)";
+    txt.innerHTML = "<span>" + (pull >= LIMIT ? "Suelte para actualizar" : "Deslice hacia abajo para actualizar") + "</span>";
+  }, { passive:true });
+  document.addEventListener("touchend", function(){
+    if (y0 === null) return;
+    var pull = Math.min(dy * 0.55, 110); y0 = null;
+    if (pull >= LIMIT && onScan()) {
+      ptr.style.transition = "transform .2s"; ptr.style.transform = "translateY(" + (top() + 14) + "px)";
+      ptr.classList.remove("ready"); txt.style.opacity = 0; refreshData();
+    } else hidePtr();
+  });
+})();
+function hidePtr(){
+  var p = $("ptr"); p.style.transition = "transform .25s, opacity .25s"; p.style.opacity = 0; p.style.transform = "translateY(-60px)";
+  p.classList.remove("ready"); $("ptrTxt").style.opacity = 0;
+}
+
+/* ================= PRECIOS EN VIVO ================= */
+S.prevPx = {};
+function renderPrices(){
+  var anyFix = false;
+  $("pRows").innerHTML = C.INDICES.map(function(base){
+    var ix = S.indices.filter(function(x){ return x.name === base.name; })[0] || base, r = S.res[ix.symbol];
+    var col = base.kind === "crash" ? "var(--crash)" : "var(--boom)";
+    var name = '<span class="n"><i style="background:'+col+'"></i><span>'+base.name+'<small>'+(base.kind==="crash"?"VENDER":"COMPRAR")+'</small></span></span>';
+    if (!r) return '<div class="pr">'+name+'<span class="mut">…</span><span class="mut">—</span><span class="mut">—</span></div>';
+    var d = C.decimals(r.price), prev = S.prevPx[base.name], cls = prev == null || prev === r.price ? "" : (r.price > prev ? "up" : "dn");
+    S.prevPx[base.name] = r.price;
+    if (r.fixedSl || r.fixedTp) anyFix = true;
+    return '<button class="pr" data-sym="'+r.symbol+'">'+name+
+      '<span><span class="px '+cls+'">'+fmt(r.price,d)+'</span></span>'+
+      '<span class="rs">'+fmt(r.rsi,1)+'</span>'+
+      '<span class="lv" style="color:'+(r.pct>=95?"var(--crash)":r.pct>=90?"var(--hot)":"var(--text)")+'">'+r.pct+'%</span></button>';
+  }).join("");
+  $("pFixNote").textContent = "";
+  Array.prototype.forEach.call($("pRows").querySelectorAll("button.pr"), function(b){ b.onclick = function(){ openSheet(b.getAttribute("data-sym")); }; });
+  setTimeout(function(){ Array.prototype.forEach.call(document.querySelectorAll(".pr .px.up,.pr .px.dn"), function(e){ e.classList.remove("up","dn"); }); }, 650);
+}
+
+/* ================= ADVERTENCIA DE RIESGO ================= */
+$("btnRiskOk").onclick = function(){ store("riesgo_ok", Date.now()); hide("riskBox"); };
+$("btnRisk").onclick = function(){ show("riskBox"); };
+
+/* ================= SL Y TP POR ÍNDICE (administrador) ================= */
+function loadSltp(){
+  var saved = hasFirebase ? remote.sltp : store("sltp");
+  CFG.sltp = (saved && typeof saved === "object") ? saved : JSON.parse(JSON.stringify(CFG.sltpDefault || {}));
+}
+function buildSltpEditor(){
+  $("sltpEd").innerHTML = C.INDICES.map(function(ix){
+    var ov = (CFG.sltp || {})[ix.name] || {}, r = null;
+    for (var k in S.res) if (S.res[k].name === ix.name) r = S.res[k];
+    var auto = r ? fmt(r.autoDist, 2) : "auto";
+    return '<div class="slt"><b>'+ix.name+'</b><input inputmode="decimal" data-n="'+ix.name+'" data-k="sl" value="'+(ov.sl||"")+'" placeholder="auto '+auto+'" aria-label="SL '+ix.name+'">' +
+      '<input inputmode="decimal" data-n="'+ix.name+'" data-k="tp" value="'+(ov.tp||"")+'" placeholder="auto '+auto+'" aria-label="TP '+ix.name+'"></div>';
+  }).join("");
+}
+function saveSltp(obj){
+  CFG.sltp = obj;
+  Object.keys(S.data).forEach(function(sym){ var ix = ixOf(sym); if (ix) S.res[sym] = C.analyze(ix, S.data[sym], CFG, 0, 0) || S.res[sym]; });
+  S.dirty = true;
+  if (fb) return fb.F.setDoc(fb.F.doc(fb.db, "config", "app"), { sltp: obj }, { merge:true }).then(function(){ remote.sltp = obj; });
+  store("sltp", obj); return Promise.resolve();
+}
+$("btnSltpSave").onclick = function(){
+  var obj = {}, bad = false;
+  Array.prototype.forEach.call($("sltpEd").querySelectorAll("input"), function(i){
+    var v = i.value.trim().replace(",", "."); if (!v) return;
+    var n = parseFloat(v); if (!(n > 0)) { bad = true; i.style.borderColor = "var(--crash)"; return; }
+    i.style.borderColor = ""; (obj[i.getAttribute("data-n")] = obj[i.getAttribute("data-n")] || {})[i.getAttribute("data-k")] = n;
+  });
+  if (bad) return msg("sltpMsg", "Revise los valores en rojo: deben ser números mayores que 0.");
+  msg("sltpMsg", "Guardando…", true);
+  saveSltp(obj).then(function(){ msg("sltpMsg", "Guardado. Ya se aplica en la app y en las alertas.", true); buildSltpEditor(); })
+    .catch(function(e){ msg("sltpMsg", "Error: " + e.message); });
+};
+$("btnSltpAuto").onclick = function(){ saveSltp(JSON.parse(JSON.stringify(CFG.sltpDefault || {}))).then(function(){ buildSltpEditor(); msg("sltpMsg", "Se restablecieron los valores de fábrica.", true); }); };
+
+function tickUi(){
+  var age = S.lastTick ? Math.round((Date.now() - S.lastTick)/1000) : null;
+  var live = feed && feed.alive && age !== null && age < 30;
+  $("liveDot").className = "dot" + (live ? " on" : (feed && feed.alive ? " wait" : ""));
+  $("liveTxt").textContent = live ? "En vivo · Deriv" + (S.isAdmin && S.tg.on ? " · Telegram ✓" : "") : (feed && feed.alive ? "Cargando datos…" : "Conectando…");
+  $("cState").textContent = live ? "En vivo" : (feed && feed.alive ? "Esperando datos" : "Buscando servidor");
+  $("cState").style.color = live ? "var(--boom)" : "var(--hot)";
+  $("cSrv").textContent = S.server || "—";
+  $("cAge").textContent = age === null ? "—" : "hace " + age + " s";
+  $("updAge").textContent = age === null ? "—" : (age < 2 ? "ahora" : age < 60 ? "hace " + age + " s" : "hace " + Math.floor(age/60) + " min");
+  $("updAge").style.color = age !== null && age > 30 ? "var(--hot)" : "";
+  if (S.dirty) { S.dirty = false; render(); }
+}
+
+/* ================= HOJA DE DETALLE ================= */
+function openSheet(sym){ S.sheetSym = sym; renderSheet(); $("shade").classList.add("on"); $("sheet").classList.add("on"); }
+function closeSheet(){ S.sheetSym = null; $("shade").classList.remove("on"); $("sheet").classList.remove("on"); }
+$("shade").onclick = closeSheet;
+(function(){ var y0 = null, el = $("sheet");
+  el.addEventListener("touchstart", function(e){ y0 = e.touches[0].clientY; }, { passive:true });
+  el.addEventListener("touchend", function(e){ if (y0 !== null && e.changedTouches[0].clientY - y0 > 90 && $("sheetIn").scrollTop <= 0) closeSheet(); y0 = null; });
+})();
+function renderSheet(){
+  var r = S.res[S.sheetSym]; if (!r) return;
+  var d = C.decimals(r.price), col = r.pct >= 95 ? "var(--crash)" : r.pct >= 90 ? "var(--hot)" : (r.kind === "crash" ? "#ff8a9d" : "#6ff0c2");
+  var state = r.pct >= 95 ? ["RSI EXTREMO","var(--crash)"] : r.pct >= 90 ? ["EN ZONA DE ALERTA","var(--hot)"] : ["EN OBSERVACIÓN","var(--muted)"];
+  $("sheetIn").innerHTML =
+    '<div class="grab"></div><button class="ib" id="shClose" aria-label="Cerrar" style="position:absolute;right:18px;top:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+    '<span class="side '+r.kind+'">'+r.side+'</span><div class="sh-name">'+r.name+'</div>' +
+    '<div style="display:flex;align-items:baseline;gap:10px;margin-top:6px"><span class="big" style="color:'+col+'">'+r.pct+'%</span><b style="color:'+state[1]+';font-size:12px;letter-spacing:1px">'+state[0]+'</b></div>' +
+    '<div class="kv"><div class="entry"><small>Precio actual</small><b>'+fmt(r.price,d)+'</b></div>' +
+    '<div><small>RSI('+CFG.rsiPeriod+')</small><b>'+fmt(r.rsi,1)+'</b></div>' +
+    '<div><small>EMA 200</small><b>'+(r.emaOk==null?"—":r.emaOk?"A favor ✓":"En contra")+'</b></div></div>' +
+    '<canvas id="rsiCv"></canvas>' +
+    '<div class="two"><button class="btn btn-main" id="shChart">Ver gráfico</button><button class="btn btn-ghost" id="shCopy" style="margin:0">Copiar señal</button></div>';
+  drawRsi($("rsiCv"), r);
+  $("shClose").onclick = closeSheet;
+  $("shChart").onclick = function(){ closeSheet(); openChart(r.symbol); };
+  $("shCopy").onclick = function(){
+    var t = r.side + " " + r.name + " · " + r.pct + "%\nPrecio: " + fmt(r.price,d) + "\nRSI(" + CFG.rsiPeriod + "): " + fmt(r.rsi,1);
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ toast("Señal copiada"); }).catch(function(){ toast("No se pudo copiar"); });
+  };
+}
+function drawRsi(cv, r){
+  var closes = (S.data[r.symbol] || []).map(function(c){ return c.close; });
+  var rs = C.rsiSeries(closes, CFG.rsiPeriod).slice(-60).filter(function(v){ return v != null; });
+  var dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight; if (!W || rs.length < 2) return;
+  cv.width = W*dpr; cv.height = H*dpr; var g = cv.getContext("2d"); g.scale(dpr,dpr);
+  function y(v){ return 8 + (H-16) * (1 - v/100); }
+  g.fillStyle = "#ff547014"; g.fillRect(0, y(100), W, y(CFG.rsiCrash) - y(100));
+  g.fillStyle = "#2ee6a614"; g.fillRect(0, y(CFG.rsiBoom), W, y(0) - y(CFG.rsiBoom));
+  [[CFG.rsiCrash,"#ff5470"],[50,"#3a3658"],[CFG.rsiBoom,"#2ee6a6"]].forEach(function(z){ g.strokeStyle = z[1]; g.setLineDash([4,4]); g.beginPath(); g.moveTo(0,y(z[0])); g.lineTo(W,y(z[0])); g.stroke(); });
+  g.setLineDash([]); g.fillStyle = "#9a95b8"; g.font = "600 10px Sora, sans-serif";
+  g.fillText("RSI " + CFG.rsiCrash, 6, y(CFG.rsiCrash) - 3); g.fillText("RSI " + CFG.rsiBoom, 6, y(CFG.rsiBoom) + 11);
+  g.strokeStyle = "#b794ff"; g.lineWidth = 2; g.beginPath();
+  rs.forEach(function(v,i){ var x = i * (W/(rs.length-1)); if (i) g.lineTo(x, y(v)); else g.moveTo(x, y(v)); });
+  g.stroke();
+}
+
+/* ================= GRÁFICO ================= */
+var CV = { open:false, sym:null, tf:300, chart:null, candles:[], lines:[] };
+var TZ = -new Date().getTimezoneOffset()*60;
+function openChart(sym){
+  CV.sym = sym; CV.tf = S.tf; CV.open = true;
+  show("cv"); document.body.style.overflow = "hidden";
+  buildSeg($("cvTfs"), function(){ return CV.tf; }, function(v){ CV.tf = v; chartSubscribe(); });
+  if (!CV.chart) {
+    CV.chart = LightweightCharts.createChart($("chart"), {
+      autoSize:true,
+      layout:{ background:{ color:"#0c0b14" }, textColor:"#9a95b8", fontFamily:"Sora, sans-serif" },
+      grid:{ vertLines:{ color:"#1a1828" }, horzLines:{ color:"#1a1828" } },
+      rightPriceScale:{ borderColor:"#2a2740" }, timeScale:{ borderColor:"#2a2740", timeVisible:true, secondsVisible:false },
+      crosshair:{ mode:0 }, localization:{ locale:(window.MTS_LOCALE||"es-CO") }
+    });
+    CV.cs = CV.chart.addCandlestickSeries({ upColor:"#2ee6a6", downColor:"#ff5470", borderVisible:false, wickUpColor:"#2ee6a6", wickDownColor:"#ff5470" });
+    CV.e20 = CV.chart.addLineSeries({ color:"#ffd54a", lineWidth:2, priceLineVisible:false, lastValueVisible:false });
+    CV.e50 = CV.chart.addLineSeries({ color:"#f59e0b", lineWidth:2, priceLineVisible:false, lastValueVisible:false });
+    CV.e200 = CV.chart.addLineSeries({ color:"#b794ff", lineWidth:2, priceLineVisible:false, title:"EMA200" });
+  }
+  CV.cs.setData([]); chartSubscribe();
+}
+function chartSubscribe(){
+  if (CV.subId && feed) { feed.send({ forget:CV.subId }); CV.subId = null; }
+  CV.candles = [];
+  if (CV.tf === S.tf && S.data[CV.sym]) { chartSet(S.data[CV.sym].slice()); return; }
+  if (!feed) return;
+  feed.request({ ticks_history:CV.sym, style:"candles", granularity:CV.tf, count:500, end:"latest", adjust_start_time:1, subscribe:1 }, 15000)
+    .then(function(m){ if (m && m.subscription) CV.subId = m.subscription.id; });
+}
+function chartSet(c){ CV.candles = c; chartRender(true); }
+function chartUpdate(c){ var a = CV.candles, last = a[a.length-1]; if (last && last.time === c.time) a[a.length-1] = c; else if (!last || c.time > last.time) a.push(c); chartRender(false); }
+function chartRender(full){
+  var ix = ixOf(CV.sym), a = CV.candles; if (!ix || a.length < 30) return;
+  var closes = a.map(function(c){ return c.close; });
+  function sh(c){ return { time:c.time+TZ, open:c.open, high:c.high, low:c.low, close:c.close }; }
+  function line(arr){ var out=[]; arr.forEach(function(v,i){ if (v!=null) out.push({ time:a[i].time+TZ, value:v }); }); return out; }
+  if (full) {
+    CV.cs.setData(a.map(sh));
+    CV.e20.setData(line(C.ema(closes,20))); CV.e50.setData(line(C.ema(closes,50))); CV.e200.setData(line(C.ema(closes,200)));
+    var rs = C.rsiSeries(closes, CFG.rsiPeriod), marks = [];
+    for (var i=1;i<rs.length;i++){
+      var p = C.rsiToPct(rs[i], ix.kind, CFG), q = C.rsiToPct(rs[i-1], ix.kind, CFG);
+      if (p >= 90 && (q == null || q < 90)) marks.push(ix.kind === "crash"
+        ? { time:a[i].time+TZ, position:"aboveBar", color:"#ff5470", shape:"arrowDown", text:(window.MTS_T?window.MTS_T("VENDER "+p+"%"):"VENDER "+p+"%") }
+        : { time:a[i].time+TZ, position:"belowBar", color:"#2ee6a6", shape:"arrowUp", text:(window.MTS_T?window.MTS_T("COMPRAR "+p+"%"):"COMPRAR "+p+"%") });
+    }
+    CV.cs.setMarkers(marks);
+    CV.chart.timeScale().setVisibleLogicalRange({ from:a.length-90, to:a.length+6 });
+  } else {
+    var c = a[a.length-1]; CV.cs.update(sh(c));
+    [[CV.e20,20],[CV.e50,50],[CV.e200,200]].forEach(function(z){ var e = C.ema(closes,z[1]); if (e[e.length-1]!=null) z[0].update({ time:c.time+TZ, value:e[e.length-1] }); });
+  }
+  var r = C.analyze(ix, a, CFG, 0, 0), d = C.decimals(r.price);
+  CV.lines.forEach(function(l){ CV.cs.removePriceLine(l); });
+  CV.lines = [];
+  var sell = r.kind === "crash", col = sell ? "#ff5470" : "#2ee6a6";
+  $("cvName").textContent = r.name;
+  $("cvSub").textContent = ix.symbol + " · " + tfName(CV.tf) + " · " + fmt(r.price,d);
+  $("cvSig").textContent = (sell ? "▼ " : "▲ ") + r.side + " " + r.pct + "%" + (r.pct >= 95 ? " · RSI EXTREMO" : "");
+  $("cvSig").style.cssText = "color:"+col+";background:"+col+"1c;border:1px solid "+col+"66";
+  $("cvFoot").textContent = "Precio " + fmt(r.price,d) + "  ·  RSI " + fmt(r.rsi,1);
+}
+function closeChart(){ CV.open = false; if (CV.subId && feed) { feed.send({ forget:CV.subId }); CV.subId = null; } hide("cv"); document.body.style.overflow = ""; }
+$("cvClose").onclick = closeChart;
+
+window.MTS_closeChart = function(){ if (CV.open) { closeChart(); return true; } if (S.sheetSym) { closeSheet(); return true; } return false; };
+
+if ("serviceWorker" in navigator && location.host !== "appassets.androidplatform.net" && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function(){});
+})();
+</script>
+</body>
+</html>

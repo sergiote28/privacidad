@@ -838,6 +838,18 @@ function saveSubToDb(st){
   var data = { activa: !!st.active, plan: st.plan || "", renueva: !!st.autoRenewing, actualizado: fb.F.serverTimestamp() };
   fb.F.updateDoc(fb.F.doc(fb.db, "usuarios", S.uid), { suscripcion: data }).catch(function(){});
 }
+var PLAY_URL = "https://play.google.com/store/apps/details?id=com.mirrortradepro.scanner";
+var WEB_IPHONE = !hasBilling() && !IOS && /iPhone|iPad|iPod/.test(navigator.userAgent || "");
+function webPlans(){
+  // Versión web: no cobra; manda a la app de Google Play
+  if (hasBilling() || IOS) return;
+  $("btnSubscribe").textContent = WEB_IPHONE ? T("Muy pronto en el App Store") : T("Descargar en Google Play");
+  $("btnSubscribe").disabled = WEB_IPHONE;
+  $("plansFine").textContent = WEB_IPHONE
+    ? T("La suscripción se hace desde la app. La versión para iPhone estará muy pronto en el App Store.")
+    : T("La suscripción se hace desde la app de Google Play. Entre con el mismo correo y su cuenta se mantiene.");
+  $("btnRestore").classList.add("hidden");
+}
 function showPlans(note){
   stopApp(); hide("app"); show("home"); hide("fMain"); hide("authTabs"); hide("fForgot"); hide("fBlocked"); show("fPlans");
   var expired = TR.end > 0 && !trialActive(), trial = trialActive();
@@ -847,6 +859,7 @@ function showPlans(note){
   $("btnBackApp").classList.toggle("hidden", !trial);
   msg("plansMsg", note || "", false);
   loadPlanPrices();
+  webPlans();
   window.scrollTo(0,0);
 }
 function selectPlan(p){
@@ -856,9 +869,10 @@ function selectPlan(p){
 }
 function updateTrialText(){
   $("btnSubscribe").textContent = T("Suscribirme");
+  webPlans();
 }
 function loadPlanPrices(){
-  if (!hasBilling()) { msg("plansMsg", "Para suscribirse, instale la app desde Google Play."); return; }
+  if (!hasBilling()) return;
   nativeCall("subPlans", [], 20000).then(function(r){
     if (!r || !r.ok || !r.plans) return;
     var info = {};
@@ -926,7 +940,7 @@ Array.prototype.forEach.call(document.querySelectorAll("#fPlans .plan"), functio
   b.onclick = function(){ selectPlan(b.getAttribute("data-plan")); };
 });
 $("btnSubscribe").onclick = function(){
-  if (!hasBilling()) return msg("plansMsg", "Para suscribirse, instale la app desde Google Play.");
+  if (!hasBilling()) { if (!WEB_IPHONE) window.open(PLAY_URL, "_blank", "noopener"); return; }
   var btn = this; btn.disabled = true; msg("plansMsg", T("Abriendo Google Play…"), true);
   nativeCall("subBuy", [SUB.plan, S.uid || ""], 0).then(function(r){
     btn.disabled = false;
